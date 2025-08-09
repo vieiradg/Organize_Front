@@ -1,0 +1,24 @@
+.agenda-page {
+    padding: 2rem;
+}
+
+.agenda-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.view-controls button {
+    margin-left: 0.5rem;
+    padding: 0.5rem 1rem;
+    border: 1px solid #ddd;
+    background-color: #f9f9f9;
+    cursor: pointer;
+}
+
+.view-controls button.active {
+    background-color: #4a90e2;
+    color: white;
+    border-color: #4a90e2;
+}

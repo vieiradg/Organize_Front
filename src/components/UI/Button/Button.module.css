@@ -1,0 +1,22 @@
+.button {
+  background-color: var(--highlight-orange);
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+.button:hover {
+  background-color: #e06b14;
+}
+
+.button.secondary {
+  background-color: var(--highlight-blue);
+}
+
+.button.secondary:hover {
+  background-color: #3070d0;
+}

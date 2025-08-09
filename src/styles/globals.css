@@ -1,0 +1,30 @@
+:root {
+  --primary-background: #FFFFFF;
+  --sidebar-background: #1E293B;
+  --highlight-orange: #F97316;
+  --highlight-blue: #3B82F6;
+  --text-primary: #333333;
+  --text-sidebar: #FFFFFF;
+}
+
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--primary-background);
+  color: var(--text-primary);
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+}
+
+#root {
+  display: flex;
+  height: 100%;
+  width: 100%;
+}
+
+.active-nav-link {
+  background-color: var(--highlight-orange);
+}
