@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import "../Auth.css";
 import { Link, useNavigate } from 'react-router-dom';
+import '../Auth.css';
 import api from '../../../services/api.js';
 
-const Register = () => {
+export default function Register() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [errors, setErrors] = useState({});
@@ -22,7 +22,7 @@ const Register = () => {
                 roles: ['ROLE_PROFESSIONAL']
             });
             
-            setSuccessMessage('Registro bem-sucedido! Você será redirecionado para o login.');
+            setSuccessMessage('Registro bem-sucedido! Você será redirecionado para o login em 3 segundos.');
 
             setTimeout(() => {
                 navigate('/login');
@@ -40,39 +40,52 @@ const Register = () => {
     };
 
     return (
-        <div className="login-container">
-            <div className="login-form">
-                <h2>Criar Conta</h2>
-                <form onSubmit={handleSubmit}>
-                    {errors.api && <p className="error-message api-error">{errors.api}</p>}
-                    {successMessage && <p className="success-message api-error">{successMessage}</p>}
+        <div className="login-background">
+            <div className="login-card">
+                <div className="login-header">
+                    <h1 className="login-logo-text">Organize</h1>
+                    <h2 className="login-title">Crie sua conta</h2>
+                    <p className="login-subtitle">Comece a transformar seu negócio hoje mesmo.</p>
+                </div>
+                
+                <form onSubmit={handleSubmit} className="login-form">
+                    {errors.api && <p className="error-message">{errors.api}</p>}
+                    {successMessage && <p className="success-message">{successMessage}</p>}
+
                     <div className="form-group">
-                        <label>Usuário:</label>
+                        <label htmlFor="username">Usuário (ou Email):</label>
                         <input 
-                            type="text" 
+                            type="text"
+                            id="username"
                             placeholder="Escolha um nome de usuário"
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
+                            required
                         />
                     </div>
                     <div className="form-group">
-                        <label>Senha:</label>
+                        <label htmlFor="password">Senha:</label>
                         <input 
                             type="password" 
-                            placeholder="Crie uma senha"
+                            id="password"
+                            placeholder="Crie uma senha segura"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
+                            required
                         />
                     </div>
-                    <button type="submit" className="login-button">Registrar</button>
+                    
+                    <button type="submit" className="login-button" disabled={!!successMessage}>
+                        {successMessage ? 'Redirecionando...' : 'Criar Conta'}
+                    </button>
                 </form>
-                <div className="extra-links">
-                    <span>Já tem uma conta? </span>
-                    <Link to="/login">Faça login</Link>
+                
+                <div className="login-footer">
+                    <p>
+                        Já tem uma conta? <Link to="/login">Faça login</Link>
+                    </p>
                 </div>
             </div>
         </div>
     );
-};
-
-export default Register;
+}

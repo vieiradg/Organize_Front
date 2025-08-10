@@ -1,0 +1,126 @@
+.titulo-secao-dashboard {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #1f2937;
+    margin-bottom: 2rem;
+}
+
+.dashboard-content > .grid-widgets {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+.widget-card {
+    background-color: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.widget-titulo {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #6b7280;
+    margin: 0;
+    margin-bottom: 0.5rem;
+}
+
+.widget-valor {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #111827;
+    margin: 0;
+}
+
+.widget-subtexto {
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin: 0;
+    margin-top: auto;
+}
+
+.card-lista {
+    grid-column: span 1;
+}
+
+
+@media (min-width: 1024px) {
+    .dashboard-content .grid-widgets .card-lista {
+        grid-column: span 2;
+    }
+}
+
+.lista-simples {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.lista-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e5e7eb;
+    padding-bottom: 0.75rem;
+}
+
+.lista-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.item-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.item-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 9999px;
+    background-color: #e5e7eb;
+    color: #1f2937;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 500;
+    flex-shrink: 0;
+}
+
+.item-nome {
+    font-weight: 600;
+    color: #111827;
+    margin: 0;
+}
+
+.item-meta {
+    color: #6b7280;
+    font-size: 0.875rem;
+    margin: 0;
+}
+
+.lista-item-avaliacao {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    border-bottom: 1px solid #e5e7eb;
+    padding-bottom: 0.75rem;
+}
+.lista-item-avaliacao:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.avaliacao-estrelas {
+    color: #facc15;
+}

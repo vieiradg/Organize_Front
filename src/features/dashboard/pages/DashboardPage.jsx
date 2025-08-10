@@ -1,76 +1,135 @@
 import React from 'react';
-import Card from '../../../components/UI/Card/Card';
 
-const DashboardPage = () => {
+// Ícone usado no widget de avaliações
+const EstrelaIcone = ({ preenchida }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill={preenchida ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icone">
+    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+  </svg>
+);
+
+export default function DashboardPage() {
   return (
-    <div>
-      <h1>Dashboard</h1>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px', marginBottom: '20px' }}>
-        <Card>
-          <h2>Faturamento do Mês</h2>
-          <p style={{ fontSize: '2em', fontWeight: 'bold', color: 'var(--highlight-orange)' }}>R$ 12.500,00</p>
-          <p>+12% em relação ao mês anterior</p>
-        </Card>
-        <Card>
-          <h2>Agendamentos Hoje</h2>
-          <p style={{ fontSize: '2em', fontWeight: 'bold' }}>8</p>
-          <p>3 agendamentos confirmados</p>
-        </Card>
-        <Card>
-          <h2>Próximo Agendamento</h2>
-          <p style={{ fontSize: '2em', fontWeight: 'bold' }}>14:00h</p>
-          <p>Com Maria Clara - Consultoria</p>
-        </Card>
-        <Card>
-          <h2>Novos Clientes</h2>
-          <p style={{ fontSize: '2em', fontWeight: 'bold' }}>5</p>
-          <p>Aumento de 20%</p>
-        </Card>
-      </div>
-
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-        <Card>
-          <h2>Próximos Agendamentos</h2>
-          <div style={{ marginBottom: '10px' }}>
-            <p><strong>Samuel Alejandro</strong> - Consultoria - 15:00h <span style={{ float: 'right', color: 'gray' }}>Hoje</span></p>
-          </div>
-          <div style={{ marginBottom: '10px' }}>
-            <p><strong>Ana Julia</strong> - Fisioterapia - 10:00h <span style={{ float: 'right', color: 'gray' }}>Amanhã</span></p>
-          </div>
-          <div>
-            <p><strong>Alex Silva</strong> - Mentoria - 16:30h <span style={{ float: 'right', color: 'gray' }}>Amanhã</span></p>
-          </div>
-        </Card>
-
-        <Card>
-          <h2>Principais Clientes do Mês</h2>
-          <div style={{ marginBottom: '10px' }}>
-            <p><strong>Sofia Gomez</strong> <span style={{ float: 'right', color: 'gray' }}>R$ 1.200,00</span></p>
-          </div>
-          <div style={{ marginBottom: '10px' }}>
-            <p><strong>Gelsa Barbosa</strong> <span style={{ float: 'right', color: 'gray' }}>R$ 950,00</span></p>
-          </div>
-          <div>
-            <p><strong>Thaina Costa</strong> <span style={{ float: 'right', color: 'gray' }}>R$ 800,00</span></p>
-          </div>
-        </Card>
-      </div>
-
-      <Card>
-        <h2>Avaliações Recentes</h2>
-        <div style={{ marginBottom: '10px' }}>
-          <p>⭐⭐⭐⭐⭐</p>
-          <p><strong>João da Silva</strong></p>
-          <p>"Ótimo atendimento, super pontual!"</p>
+    <div className="dashboard-content">
+      <h1 className="titulo-secao-dashboard">Dashboard</h1>
+      <div className="grid-widgets">
+        <div className="widget-card">
+          <p className="widget-titulo">Faturamento do Mês</p>
+          <h2 className="widget-valor">R$ 12.500,00</h2>
+          <p className="widget-subtexto">+12% em relação ao mês anterior</p>
         </div>
-        <div>
-          <p>⭐⭐⭐⭐</p>
-          <p><strong>Marta Souza</strong></p>
-          <p>"Profissionalismo impecável. Recomendo muito!"</p>
+        <div className="widget-card">
+          <p className="widget-titulo">Agendamentos Hoje</p>
+          <h2 className="widget-valor">8</h2>
+          <p className="widget-subtexto">3 agendamentos confirmados</p>
         </div>
-      </Card>
+        <div className="widget-card">
+          <p className="widget-titulo">Próximo Agendamento</p>
+          <h2 className="widget-valor">14:00h</h2>
+          <p className="widget-subtexto">Com Maria Clara - Consultoria</p>
+        </div>
+        <div className="widget-card">
+          <p className="widget-titulo">Novos Clientes</p>
+          <h2 className="widget-valor">5</h2>
+          <p className="widget-subtexto">Aumento de 20%</p>
+        </div>
+        <div className="widget-card card-lista">
+          <h3 className="widget-titulo">Próximos Agendamentos</h3>
+          <ul className="lista-simples">
+            <li className="lista-item">
+              <div className="item-info">
+                <div className="item-avatar">JD</div>
+                <div>
+                  <p className="item-nome">João da Silva</p>
+                  <p className="item-meta">Consultoria - 15:00h</p>
+                </div>
+              </div>
+              <span className="item-meta">Hoje</span>
+            </li>
+            <li className="lista-item">
+              <div className="item-info">
+                <div className="item-avatar">AN</div>
+                <div>
+                  <p className="item-nome">Ana Nogueira</p>
+                  <p className="item-meta">Fisioterapia - 10:00h</p>
+                </div>
+              </div>
+              <span className="item-meta">Amanhã</span>
+            </li>
+            <li className="lista-item">
+              <div className="item-info">
+                <div className="item-avatar">RC</div>
+                <div>
+                  <p className="item-nome">Ricardo Costa</p>
+                  <p className="item-meta">Mentoria - 16:30h</p>
+                </div>
+              </div>
+              <span className="item-meta">Amanhã</span>
+            </li>
+          </ul>
+        </div>
+        <div className="widget-card card-lista">
+          <h3 className="widget-titulo">Principais Clientes do Mês</h3>
+          <ul className="lista-simples">
+            <li className="lista-item">
+              <div className="item-info">
+                <div className="item-avatar">MS</div>
+                <div>
+                  <p className="item-nome">Marta Souza</p>
+                  <p className="item-meta">R$ 1.200,00</p>
+                </div>
+              </div>
+              <span className="item-meta">3 agendamentos</span>
+            </li>
+            <li className="lista-item">
+              <div className="item-info">
+                <div className="item-avatar">PA</div>
+                <div>
+                  <p className="item-nome">Pedro Alves</p>
+                  <p className="item-meta">R$ 950,00</p>
+                </div>
+              </div>
+              <span className="item-meta">2 agendamentos</span>
+            </li>
+            <li className="lista-item">
+              <div className="item-info">
+                <div className="item-avatar">FL</div>
+                <div>
+                  <p className="item-nome">Fernanda Lima</p>
+                  <p className="item-meta">R$ 800,00</p>
+                </div>
+              </div>
+              <span className="item-meta">4 agendamentos</span>
+            </li>
+          </ul>
+        </div>
+        <div className="widget-card card-lista">
+          <h3 className="widget-titulo">Avaliações Recentes</h3>
+          <ul className="lista-simples">
+            <li className="lista-item-avaliacao">
+              <div className="avaliacao-estrelas">
+                  <EstrelaIcone preenchida={true} />
+                  <EstrelaIcone preenchida={true} />
+                  <EstrelaIcone preenchida={true} />
+                  <EstrelaIcone preenchida={true} />
+                  <EstrelaIcone preenchida={true} />
+              </div>
+              <p className="item-nome">João da Silva</p>
+              <p className="item-meta">"Ótimo atendimento, super pontual!"</p>
+            </li>
+            <li className="lista-item-avaliacao">
+              <div className="avaliacao-estrelas">
+                  <EstrelaIcone preenchida={true} />
+                  <EstrelaIcone preenchida={true} />
+                  <EstrelaIcone preenchida={true} />
+                  <EstrelaIcone preenchida={true} />
+                  <EstrelaIcone preenchida={true} />
+              </div>
+              <p className="item-nome">Marta Souza</p>
+              <p className="item-meta">"Profissionalismo impecável. Recomendo muito!"</p>
+            </li>
+          </ul>
+        </div>
+      </div>
     </div>
   );
-};
-
-export default DashboardPage;
+}

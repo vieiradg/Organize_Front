@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import "../Auth.css";
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import '../Auth.css'; 
 import api from '../../../services/api.js';
 
-const ResetPassword = () => {
+export default function ResetPassword() {
     const [searchParams] = useSearchParams();
     const token = searchParams.get('token');
 
@@ -27,7 +27,7 @@ const ResetPassword = () => {
         }
 
         if (!token) {
-            setError('Token de redefinição não encontrado.');
+            setError('Token de redefinição inválido ou não encontrado na URL.');
             setLoading(false);
             return;
         }
@@ -43,50 +43,60 @@ const ResetPassword = () => {
             }, 3000);
         } catch (err) {
             console.error('Erro ao redefinir senha:', err);
-            setError(err.response?.data?.message || 'Erro ao redefinir senha. Token inválido ou expirado.');
+            setError(err.response?.data?.message || 'Erro ao redefinir senha. O token pode ser inválido ou ter expirado.');
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <div className="login-container">
-            <div className="login-form">
-                <h2>Redefinir Senha</h2>
-                <p style={{ marginBottom: '1.5rem', color: '#666' }}>Insira sua nova senha.</p>
-                <form onSubmit={handleSubmit}>
+        <div className="login-background">
+            <div className="login-card">
+                <div className="login-header">
+                    <h1 className="login-logo-text">Organize</h1>
+                    <h2 className="login-title">Crie uma Nova Senha</h2>
+                    <p className="login-subtitle">Sua nova senha deve ser diferente da anterior.</p>
+                </div>
+                
+                <form onSubmit={handleSubmit} className="login-form">
                     {error && <p className="error-message">{error}</p>}
                     {message && <p className="success-message">{message}</p>}
+
                     <div className="form-group">
-                        <label>Nova Senha:</label>
+                        <label htmlFor="new-password">Nova Senha</label>
                         <input 
                             type="password" 
-                            placeholder="Nova senha"
+                            id="new-password" 
+                            placeholder="••••••••"
                             value={newPassword}
                             onChange={(e) => setNewPassword(e.target.value)}
                             required
                         />
                     </div>
+
                     <div className="form-group">
-                        <label>Confirmar Nova Senha:</label>
+                        <label htmlFor="confirm-password">Confirmar Nova Senha</label>
                         <input 
                             type="password" 
-                            placeholder="Confirme a nova senha"
+                            id="confirm-password" 
+                            placeholder="••••••••"
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}
                             required
                         />
                     </div>
-                    <button type="submit" className="login-button" disabled={loading}>
+                    
+                    <button type="submit" className="login-button" disabled={loading || !!message}>
                         {loading ? 'Redefinindo...' : 'Redefinir Senha'}
                     </button>
                 </form>
-                <div className="extra-links">
-                    <Link to="/login">Voltar para o Login</Link>
+                
+                <div className="login-footer">
+                    <p>
+                       <Link to="/login">Voltar para o Login</Link>
+                    </p>
                 </div>
             </div>
         </div>
     );
 };
-
-export default ResetPassword;

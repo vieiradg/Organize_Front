@@ -1,11 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import "../components/Agenda.css";
 import DailyCalendar from '../components/DailyCalendar';
 import WeeklyCalendar from '../components/WeeklyCalendar';
 import AppointmentModal from '../../../components/AppointmentModal/AppointmentModal';
-import api from '@services/api.js';
+import agendaService from '../agendaService.js';
 
-const AgendaPage = () => {
+export default function AgendaPage() {
     const [view, setView] = useState('weekly');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedHour, setSelectedHour] = useState(null);
@@ -14,15 +13,10 @@ const AgendaPage = () => {
 
     const fetchAppointments = useCallback(async () => {
         try {
-            const year = currentDate.getFullYear();
-            const month = (currentDate.getMonth() + 1).toString().padStart(2, '0');
-            const day = currentDate.getDate().toString().padStart(2, '0');
-            const formattedDate = `${year}-${month}-${day}`;
-
-            const response = await api.get(`/api/appointments?date=${formattedDate}`);
-            setAppointments(response.data);
+            const data = await agendaService.getAppointmentsByDate(currentDate);
+            setAppointments(data);
         } catch (error) {
-            console.error('Erro ao buscar agendamentos:', error);
+            console.error('Falha ao carregar agendamentos na página.');
         }
     }, [currentDate]);
 
@@ -47,7 +41,7 @@ const AgendaPage = () => {
     return (
         <div className="agenda-page">
             <header className="agenda-header">
-                <h1>Agenda Semanal</h1>
+                <h1 className="titulo-secao-dashboard">Agenda</h1>
                 <div className="view-controls">
                     <button 
                         className={view === 'daily' ? 'active' : ''}
@@ -63,7 +57,8 @@ const AgendaPage = () => {
                     </button>
                 </div>
             </header>
-            <main>
+            
+            <main className="widget-card">
                 {view === 'daily' && 
                     <DailyCalendar 
                         onTimeSlotClick={handleTimeSlotClick} 
@@ -76,6 +71,7 @@ const AgendaPage = () => {
                     />
                 }
             </main>
+
             <AppointmentModal 
                 isOpen={isModalOpen}
                 onClose={handleCloseModal}
@@ -85,5 +81,3 @@ const AgendaPage = () => {
         </div>
     );
 };
-
-export default AgendaPage;

@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import "../Auth.css";
 import { Link, useNavigate } from 'react-router-dom';
-import api from '../../../services/api.js';
+import '../Auth.css'; 
+import api from '../../../services/api.js'; 
 
-const Login = () => {
+export default function Login() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [errors, setErrors] = useState({});
@@ -23,7 +23,7 @@ const Login = () => {
             localStorage.setItem('token', token);
             api.defaults.headers.Authorization = `Bearer ${token}`;
             
-            navigate('/agenda');
+            navigate('/dashboard'); 
 
         } catch (error) {
             const newErrors = {};
@@ -37,37 +37,57 @@ const Login = () => {
     };
 
     return (
-        <div className="login-container">
-            <div className="login-form">
-                <h2>Organize</h2>
-                <form onSubmit={handleSubmit}>
+        <div className="login-background">
+            <div className="login-card">
+                <div className="login-header">
+                    <h1 className="login-logo-text">Organize</h1>
+                    <h2 className="login-title">Bem-vindo de volta!</h2>
+                    <p className="login-subtitle">Acesse sua conta para gerenciar seu negócio.</p>
+                </div>
+                
+                <form onSubmit={handleSubmit} className="login-form">
                     {errors.api && <p className="error-message api-error">{errors.api}</p>}
+
                     <div className="form-group">
-                        <label>Usuário:</label>
+                        <label htmlFor="username">Usuário (ou Email):</label>
                         <input 
-                            type="text" 
-                            placeholder="Digite seu usuário"
+                            type="text"
+                            id="username" 
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
+                            placeholder="seu.usuario" 
+                            required 
                         />
                     </div>
                     <div className="form-group">
-                        <label>Senha:</label>
+                        <label htmlFor="password">Senha</label>
                         <input 
                             type="password" 
-                            placeholder="Sua senha" 
+                            id="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
+                            placeholder="••••••••" 
+                            required 
                         />
                     </div>
-                    <button type="submit" className="login-button">Login</button>
+                    
+                    <div className="form-options">
+                        <div className="checkbox-group">
+                            <input type="checkbox" id="remember-me" />
+                            <label htmlFor="remember-me">Lembrar-me</label>
+                        </div>
+                        <Link to="/forgot-password" className="forgot-password-link">Esqueceu a senha?</Link>
+                    </div>
+                    
+                    <button type="submit" className="login-button">Entrar na Plataforma</button>
                 </form>
-                <div className="extra-links">
-                    <Link to="/forgot-password">Esqueci minha senha</Link> | <Link to="/register">Criar uma conta</Link>
+                
+                <div className="login-footer">
+                    <p>
+                        Não tem uma conta? <Link to="/register">Crie uma agora</Link>
+                    </p>
                 </div>
             </div>
         </div>
     );
-};
-
-export default Login;
+}
