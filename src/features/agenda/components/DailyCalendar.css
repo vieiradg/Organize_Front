@@ -1,0 +1,33 @@
+.daily-calendar {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.time-slot {
+    display: flex;
+    align-items: center;
+    padding: 1.5rem 1rem;
+    border-bottom: 1px solid #ddd;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.time-slot:last-child {
+    border-bottom: none;
+}
+
+.time-slot:hover {
+    background-color: #f0f8ff;
+}
+
+.time-label {
+    font-weight: bold;
+    color: #333;
+    width: 80px;
+}
+
+.appointment-details {
+    flex-grow: 1;
+    color: #666;
+}

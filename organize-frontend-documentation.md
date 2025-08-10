@@ -67,7 +67,7 @@ Siga os passos abaixo para configurar e rodar o `organize-frontend` em seu ambie
 
 1.  **Clone o repositório** (se ainda não o fez):
     ```bash
-    git clone https://github.com/vieiradg/Organize_Front
+    git clone <URL_DO_REPOSITORIO_FRONTEND>
     cd organize-frontend
     ```
 2.  **Instale as dependências**:
@@ -87,52 +87,7 @@ Siga os passos abaixo para configurar e rodar o `organize-frontend` em seu ambie
     ```
     O aplicativo será aberto no seu navegador padrão. Se não abrir automaticamente, acesse `http://localhost:5173` (ou a porta indicada no terminal).
 
-## 6. Como Contribuir
-
- Para contribuir com o projeto `organize-frontend`, siga os passos abaixo:
-
-1.  **Faça um Fork do Repositório**:
-    Acesse o repositório original no GitHub e clique no botão "Fork" no canto superior direito. Isso criará uma cópia do repositório em sua conta.
-
-2.  **Clone o seu Fork**:
-    ```bash
-    git clone https://github.com/SEU_USUARIO/organize-frontend.git
-    cd organize-frontend
-    ```
-
-3.  **Crie uma Branch para sua Feature/Correção**:
-    É uma boa prática criar uma nova branch para cada alteração que você for fazer. Use um nome descritivo:
-    ```bash
-    git checkout -b feature/minha-nova-funcionalidade
-    # ou
-    git checkout -b bugfix/correcao-de-erro
-    ```
-
-4.  **Faça suas Alterações**:
-    Implemente suas mudanças, adicione novos recursos ou corrija bugs. Certifique-se de seguir as convenções de código existentes no projeto.
-
-5.  **Teste suas Alterações**:
-    Antes de enviar suas alterações, execute os testes existentes e, se aplicável, crie novos testes para cobrir seu código.
-    ```bash
-    npm test # ou o comando de teste específico do projeto
-    ```
-
-6.  **Commit suas Alterações**:
-    Escreva mensagens de commit claras e concisas, descrevendo o que foi alterado. Use o padrão de Conventional Commits se o projeto o seguir (ex: `feat: adiciona nova funcionalidade`, `fix: corrige bug de login`).
-    ```bash
-    git add .
-    git commit -m "feat: adiciona nova funcionalidade de tarefas"
-    ```
-
-7.  **Envie suas Alterações para o seu Fork**:
-    ```bash
-    git push origin feature/minha-nova-funcionalidade
-    ```
-
-8.  **Abra um Pull Request (PR)**:
-    Vá para o seu repositório no GitHub, você verá um botão para criar um Pull Request. Preencha o template do PR (se houver) e descreva suas alterações em detalhes. Um dos mantenedores do projeto revisará seu código e poderá solicitar alterações antes de mesclar.
-
-## 7. Considerações de Desenvolvimento
+## 6. Considerações de Desenvolvimento
 
 *   **Componentização**: O projeto segue o paradigma de componentes do React, promovendo a reutilização de código e a modularidade.
 *   **Gerenciamento de Estado**: O gerenciamento de estado é feito de forma local nos componentes ou utilizando Context API/Hooks do React para estados globais, se aplicável.

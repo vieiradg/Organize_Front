@@ -1,0 +1,66 @@
+.weeklyCalendar {
+  display: grid;
+  grid-template-columns: 80px repeat(5, 1fr);
+  gap: 1px;
+  background-color: #e0e0e0;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.timeColumn,
+.dayHeader,
+.hourLabel,
+.timeSlot {
+  background-color: white;
+  padding: 10px;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.dayHeader {
+  font-weight: bold;
+  background-color: #f0f0f0;
+  padding: 15px 10px;
+  text-align: center;
+  line-height: 1.4;
+}
+
+.hourLabel {
+  font-weight: bold;
+  justify-content: flex-end;
+  padding-right: 15px;
+  background-color: #f0f0f0;
+}
+
+.timeSlot {
+  min-height: 60px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 5px;
+}
+
+.appointment {
+  width: calc(100% - 10px);
+  padding: 5px;
+  border-radius: 4px;
+  color: white;
+  font-size: 0.85em;
+  text-align: left;
+  margin-bottom: 2px;
+  box-sizing: border-box;
+}
+
+.blue {
+  background-color: var(--highlight-blue);
+}
+
+.orange {
+  background-color: var(--highlight-orange);
+}
