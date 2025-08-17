@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
 import DashboardLayout from '../layouts/DashboardLayout';
+import LandingPage from '../features/landing/pages/LandingPage';
 import LoginPage from '../features/auth/pages/LoginPage';
 import RegisterPage from '../features/auth/pages/RegisterPage';
 import ForgotPasswordPage from '../features/auth/pages/ForgotPasswordPage';
@@ -11,21 +12,22 @@ import CustomerPage from '../features/customer/pages/CustomerPage';
 import ServicePage from '../features/products/pages/ServicePage';
 import FinanceiroPage from '../features/financeiro/pages/FinanceiroPage';
 import ConfiguracoesPage from '../features/configuracoes/pages/ConfiguracoesPage';
+import EquipePage from '../features/equipe/pages/EquipePage';
+
 
 import '../features/auth/Auth.css';
 import '../layouts/DashboardLayout.css';
 
-function AppRoutes() {
+export default function AppRoutes() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Navigate to="/login" />} />
+        <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
 
-        {/* Rotas Privadas que usam o DashboardLayout */}
         <Route element={<DashboardLayout />}>
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/agenda" element={<AgendaPage />} />
@@ -33,10 +35,9 @@ function AppRoutes() {
           <Route path="/services" element={<ServicePage />} />
           <Route path="/financeiro" element={<FinanceiroPage />} />
           <Route path="/configuracoes" element={<ConfiguracoesPage />} />
+          <Route path="/equipe" element={<EquipePage />} />
         </Route>
       </Routes>
     </BrowserRouter>
   );
 }
-
-export default AppRoutes;

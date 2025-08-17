@@ -1,68 +1,83 @@
-import React from 'react';
-import Card from '../../../components/UI/Card/Card';
+import React, { useState, useEffect } from 'react';
 
-const FinanceiroPage = () => {
-  return (
-    <div>
-      <h1>Financeiro</h1>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px', marginBottom: '20px' }}>
-        <Card>
-          <h2>Receita do Mês</h2>
-          <p style={{ fontSize: '2em', fontWeight: 'bold', color: 'var(--highlight-orange)' }}>R$ 12.500,00</p>
-          <p>+12% em relação ao mês anterior</p>
-        </Card>
-        <Card>
-          <h2>Despesas do Mês</h2>
-          <p style={{ fontSize: '2em', fontWeight: 'bold' }}>R$ 3.100,00</p>
-          <p>Materiais e despesas operacionais</p>
-        </Card>
-        <Card>
-          <h2>Lucro do Mês</h2>
-          <p style={{ fontSize: '2em', fontWeight: 'bold' }}>R$ 9.400,00</p>
-          <p>+15% em relação ao mês anterior</p>
-        </Card>
-        <Card>
-          <h2>Média por Agendamento</h2>
-          <p style={{ fontSize: '2em', fontWeight: 'bold' }}>R$ 150,00</p>
-          <p>Baseado em 50 agendamentos</p>
-        </Card>
-      </div>
+export default function FinanceiroPage() {
+    const financialData = {
+        receitaMes: 12500.00,
+        receitaAnterior: 11160.71,
+        despesasMes: 3100.00,
+        lucroMes: 9400.00,
+        lucroAnterior: 8173.91,
+        mediaAgendamento: 150.00,
+        totalAgendamentos: 83, // Exemplo
+        transacoes: [
+            { id: 1, descricao: 'Agendamento - João da Silva', valor: 200.00, data: '25/10/2024', status: 'Pago' },
+            { id: 2, descricao: 'Material de trabalho', valor: -150.00, data: '24/10/2024', status: 'Pendente' },
+            { id: 3, descricao: 'Agendamento - Ana Nogueira', valor: 180.00, data: '22/10/2024', status: 'Pago' },
+        ]
+    };
 
-      <Card>
-        <h2>Transações Recentes</h2>
-        <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '15px' }}>
-          <thead>
-            <tr style={{ borderBottom: '1px solid #eee' }}>
-              <th style={{ textAlign: 'left', padding: '8px 0' }}>Descrição</th>
-              <th style={{ textAlign: 'left', padding: '8px 0' }}>Valor</th>
-              <th style={{ textAlign: 'left', padding: '8px 0' }}>Data</th>
-              <th style={{ textAlign: 'left', padding: '8px 0' }}>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td style={{ padding: '8px 0' }}>Agendamento - João da Silva</td>
-              <td style={{ padding: '8px 0' }}>R$ 200,00</td>
-              <td style={{ padding: '8px 0' }}>25/10/2024</td>
-              <td style={{ padding: '8px 0', color: 'green' }}>Pago</td>
-            </tr>
-            <tr>
-              <td style={{ padding: '8px 0' }}>Material de trabalho</td>
-              <td style={{ padding: '8px 0' }}>R$ -150,00</td>
-              <td style={{ padding: '8px 0' }}>24/10/2024</td>
-              <td style={{ padding: '8px 0', color: 'orange' }}>Pendente</td>
-            </tr>
-            <tr>
-              <td style={{ padding: '8px 0' }}>Agendamento - Ana Nogueira</td>
-              <td style={{ padding: '8px 0' }}>R$ 180,00</td>
-              <td style={{ padding: '8px 0' }}>22/10/2024</td>
-              <td style={{ padding: '8px 0', color: 'green' }}>Pago</td>
-            </tr>
-          </tbody>
-        </table>
-      </Card>
-    </div>
-  );
+    const calcularCrescimento = (atual, anterior) => {
+        if (anterior === 0) return 'N/A';
+        const percentual = ((atual - anterior) / anterior) * 100;
+        return `${percentual > 0 ? '+' : ''}${percentual.toFixed(0)}%`;
+    };
+
+    return (
+        <div>
+            <h1 className="titulo-secao-dashboard">Financeiro</h1>
+            
+            <div className="grid-widgets">
+                <div className="widget-card">
+                    <p className="widget-titulo">Receita do Mês</p>
+                    <h2 className="widget-valor">R$ {financialData.receitaMes.toFixed(2).replace('.', ',')}</h2>
+                    <p className="widget-subtexto">{calcularCrescimento(financialData.receitaMes, financialData.receitaAnterior)} em relação ao mês anterior</p>
+                </div>
+                <div className="widget-card">
+                    <p className="widget-titulo">Despesas do Mês</p>
+                    <h2 className="widget-valor">R$ {financialData.despesasMes.toFixed(2).replace('.', ',')}</h2>
+                    <p className="widget-subtexto">Materiais e despesas operacionais</p>
+                </div>
+                <div className="widget-card">
+                    <p className="widget-titulo">Lucro do Mês</p>
+                    <h2 className="widget-valor">R$ {financialData.lucroMes.toFixed(2).replace('.', ',')}</h2>
+                    <p className="widget-subtexto">{calcularCrescimento(financialData.lucroMes, financialData.lucroAnterior)} em relação ao mês anterior</p>
+                </div>
+                <div className="widget-card">
+                    <p className="widget-titulo">Média por Agendamento</p>
+                    <h2 className="widget-valor">R$ {financialData.mediaAgendamento.toFixed(2).replace('.', ',')}</h2>
+                    <p className="widget-subtexto">Baseado em {financialData.totalAgendamentos} agendamentos</p>
+                </div>
+            </div>
+
+            <div className="widget-card" style={{ marginTop: '1.5rem' }}>
+                <h3 className="widget-titulo">Transações Recentes</h3>
+                <div className="table-container">
+                    <table className="dashboard-table">
+                        <thead>
+                            <tr>
+                                <th>Descrição</th>
+                                <th>Valor</th>
+                                <th>Data</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {financialData.transacoes.map(t => (
+                                <tr key={t.id}>
+                                    <td>{t.descricao}</td>
+                                    <td style={{ color: t.valor < 0 ? '#ef4444' : '#16a34a' }}>
+                                        R$ {t.valor.toFixed(2).replace('.', ',')}
+                                    </td>
+                                    <td>{t.data}</td>
+                                    <td style={{ color: t.status === 'Pendente' ? '#f97316' : '#16a34a' }}>
+                                        {t.status}
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    );
 };
-
-export default FinanceiroPage;
