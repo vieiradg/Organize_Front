@@ -1,38 +1,28 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import '../Auth.css'; 
-import api from '../../../services/api.js'; 
+import '../Auth.css';
 
-export default function Login() {
+export default function LoginPage() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const [errors, setErrors] = useState({});
+    const [error, setError] = useState('');
     const navigate = useNavigate();
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
-        setErrors({});
+        setError(''); 
 
-        try {
-            const response = await api.post('/auth/login', {
-                username,
-                password,
-            });
-            
-            const { token } = response.data;
-            localStorage.setItem('token', token);
-            api.defaults.headers.Authorization = `Bearer ${token}`;
-            
-            navigate('/dashboard'); 
+        //LOGIN DE DEMONSTRAÇÃO 
+ 
+        const demoUser = 'admin';
+        const demoPass = '12345';
 
-        } catch (error) {
-            const newErrors = {};
-            if (error.response && error.response.status === 403) {
-                newErrors.api = 'Usuário ou senha inválidos.';
-            } else {
-                newErrors.api = 'Ocorreu um erro. Tente novamente mais tarde.';
-            }
-            setErrors(newErrors);
+        if (username === demoUser && password === demoPass) {
+            console.log('Login de demonstração bem-sucedido!');
+            localStorage.setItem('demo_token', 'true'); 
+            navigate('/dashboard');
+        } else {
+            setError('Utilizador ou senha inválidos.');
         }
     };
 
@@ -46,27 +36,27 @@ export default function Login() {
                 </div>
                 
                 <form onSubmit={handleSubmit} className="login-form">
-                    {errors.api && <p className="error-message api-error">{errors.api}</p>}
+                    {error && <p className="error-message">{error}</p>}
 
                     <div className="form-group">
-                        <label htmlFor="username">Usuário (ou Email):</label>
+                        <label htmlFor="username">Utilizador:</label>
                         <input 
                             type="text"
                             id="username" 
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
-                            placeholder="seu.usuario" 
+                            placeholder="Use 'admin'" 
                             required 
                         />
                     </div>
                     <div className="form-group">
-                        <label htmlFor="password">Senha</label>
+                        <label htmlFor="password">Senha:</label>
                         <input 
                             type="password" 
                             id="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            placeholder="••••••••" 
+                            placeholder="Use '12345'" 
                             required 
                         />
                     </div>
