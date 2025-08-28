@@ -1,6 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import './Landing.css';
+import Button from '../../../components/UI/Button/Button';
+import { useNavigate } from 'react-router-dom';
 
 // Ícones SVG
 const CalendarioIcone = () => ( <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icone"><path d="M8 2v4"></path><path d="M16 2v4"></path><rect width="18" height="18" x="3" y="4" rx="2"></rect><path d="M3 10h18"></path></svg> );
@@ -16,6 +18,7 @@ const EmailIcone = () => ( <svg xmlns="http://www.w3.org/2000/svg" width="24" he
 const TelefoneIcone = () => ( <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icone"><path d="M22 16.92v3a2 2 0 0 1-2.18 2h-4a2 2 0 0 1-2-2 17.86 17.86 0 0 1-2.9-2.9 17.86 17.86 0 0 1-2.9-2.9 2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2.18 19.84 19.84 0 0 0 .5 2.19 2 2 0 0 1-.22 2.22l-1.9 1.9a15.42 15.42 0 0 0 3 3l1.9-1.9a2 2 0 0 1 2.22-.22 19.84 19.84 0 0 0 2.2.5 2 2 0 0 1 2.18 2z"></path></svg> );
 
 export default function LandingPage() {
+  const navigate = useNavigate()
   return (
     <div className="pagina-principal">
       <header className="cabecalho">
@@ -237,6 +240,9 @@ export default function LandingPage() {
                 <div className="item-beneficio"><VerificarCirculoIcone /><span>7 dias grátis</span></div>
                 <div className="item-beneficio"><VerificarCirculoIcone /><span>Sem cartão de crédito</span></div>
                 <div className="item-beneficio"><VerificarCirculoIcone /><span>Suporte incluído</span></div>
+              </div>
+              <div>
+                <Button onClick={() => navigate("/faleConosco")} type="secondary">Fale Conosco</Button>
               </div>
             </div>
           </div>
