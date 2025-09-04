@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import api from '../../../services/api.js'; // Ajuste o caminho se necessário
+import api from '../../../services/api.js';
 
 const AcoesIcone = () => (
     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icone-acao">
@@ -41,10 +41,11 @@ export default function CustomerPage() {
         setLoading(true);
         setError(null);
         try {
-            await api.post('/api/customers', {
+            await api.post('/auth/register', {
                 name: newCustomerName,
                 email: newCustomerEmail,
                 phone: newCustomerPhone,
+                password: 'default_password_for_new_customer',
             });
             setNewCustomerName('');
             setNewCustomerEmail('');
@@ -126,7 +127,7 @@ export default function CustomerPage() {
                                         <td>{customer.email || 'N/A'}</td>
                                         <td>{customer.phone || 'N/A'}</td>
                                         <td>{customer.lastVisit || 'N/A'}</td> 
-                                        <td>{customer.appointments || 0}</td> 
+                                        <td>{customer.appointmentsCount || 0}</td> 
                                         <td>
                                             <button className="action-button">
                                                 <AcoesIcone />

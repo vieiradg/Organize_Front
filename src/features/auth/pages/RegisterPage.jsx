@@ -4,7 +4,9 @@ import '../Auth.css';
 import api from '../../../services/api.js';
 
 export default function Register() {
-    const [username, setUsername] = useState('');
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [phone, setPhone] = useState('');
     const [password, setPassword] = useState('');
     const [errors, setErrors] = useState({});
     const [successMessage, setSuccessMessage] = useState('');
@@ -17,9 +19,10 @@ export default function Register() {
 
         try {
             await api.post('/auth/register', {
-                username,
-                password,
-                roles: ['ROLE_PROFESSIONAL']
+                name,
+                email,
+                phone,
+                password
             });
             
             setSuccessMessage('Registro bem-sucedido! Você será redirecionado para o login em 3 segundos.');
@@ -53,14 +56,35 @@ export default function Register() {
                     {successMessage && <p className="success-message">{successMessage}</p>}
 
                     <div className="form-group">
-                        <label htmlFor="username">Usuário (ou Email):</label>
+                        <label htmlFor="name">Nome:</label>
                         <input 
                             type="text"
-                            id="username"
-                            placeholder="Escolha um nome de usuário"
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
+                            id="name"
+                            placeholder="Seu nome completo"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
                             required
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="email">Email:</label>
+                        <input 
+                            type="email" 
+                            id="email"
+                            placeholder="Seu melhor email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            required
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="phone">Telefone (opcional):</label>
+                        <input 
+                            type="tel" 
+                            id="phone"
+                            placeholder="Seu telefone (opcional)"
+                            value={phone}
+                            onChange={(e) => setPhone(e.target.value)}
                         />
                     </div>
                     <div className="form-group">

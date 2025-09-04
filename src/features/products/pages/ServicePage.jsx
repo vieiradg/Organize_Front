@@ -13,7 +13,7 @@ export default function ServicePage() {
     const [services, setServices] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [selectedService, setSelectedService] = useState(null);
-    const [formData, setFormData] = useState({ name: '', duration: '', price: '', imageUrl: '' });
+    const [formData, setFormData] = useState({ name: '', duration: '', price: '', description: '' });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
@@ -26,11 +26,11 @@ export default function ServicePage() {
             setFormData({
                 name: selectedService.name || '',
                 duration: selectedService.duration || '',
-                price: selectedService.price || '',
-                imageUrl: selectedService.imageUrl || ''
+                price: selectedService.priceCents / 100 || '',
+                description: selectedService.description || ''
             });
         } else {
-            setFormData({ name: '', duration: '', price: '', imageUrl: '' });
+            setFormData({ name: '', duration: '', price: '', description: '' });
         }
     }, [selectedService]);
 
@@ -55,9 +55,10 @@ export default function ServicePage() {
     const handleSave = async (e) => {
         e.preventDefault();
         const serviceData = {
-            ...formData,
-            price: parseFloat(formData.price),
-            duration: parseInt(formData.duration)
+            name: formData.name,
+            duration: parseInt(formData.duration),
+            priceCents: Math.round(parseFloat(formData.price) * 100),
+            description: formData.description
         };
 
         try {
@@ -108,8 +109,8 @@ export default function ServicePage() {
                     <table className="dashboard-table">
                         <thead>
                             <tr>
-                                <th>Foto</th>
                                 <th>Serviço</th>
+                                <th>Descrição</th>
                                 <th>Duração</th>
                                 <th>Preço</th>
                                 <th>Ações</th>
@@ -120,10 +121,10 @@ export default function ServicePage() {
                                 <tr><td colSpan="5">A carregar...</td></tr>
                             ) : services.map(service => (
                                 <tr key={service.id}>
-                                    <td><img src={service.imageUrl || 'https://placehold.co/50x50/e5e7eb/6b7280?text=Img'} alt={service.name} className="table-image" /></td>
                                     <td>{service.name}</td>
+                                    <td>{service.description}</td>
                                     <td>{service.duration} min</td>
-                                    <td>R$ {service.price ? service.price.toFixed(2).replace('.', ',') : '0,00'}</td>
+                                    <td>R$ {(service.priceCents / 100).toFixed(2).replace('.', ',')}</td>
                                     <td className="actions-cell">
                                         <button onClick={() => openModal(service)} className="action-button icon-button"><EditarIcone /></button>
                                         <button onClick={() => handleDelete(service.id)} className="action-button icon-button delete"><DeletarIcone /></button>
@@ -155,8 +156,8 @@ export default function ServicePage() {
                                 <Input id="price" name="price" type="number" step="0.01" placeholder="150.00" value={formData.price} onChange={handleInputChange} required />
                             </div>
                             <div className="form-group">
-                                <label htmlFor="imageUrl">URL da Foto</label>
-                                <Input id="imageUrl" name="imageUrl" type="text" placeholder="https://..." value={formData.imageUrl} onChange={handleInputChange} />
+                                <label htmlFor="description">Descrição</label>
+                                <Input id="description" name="description" type="text" placeholder="Descrição do serviço" value={formData.description} onChange={handleInputChange} />
                             </div>
                         </div>
                         <div className="modal-actions">

@@ -14,7 +14,7 @@ const DailyCalendar = ({ onTimeSlotClick, appointments }) => {
         <div className="daily-calendar">
             {hours.map((hour) => {
                 const appointment = appointments.find(
-                    (app) => new Date(app.date).getHours() === hour
+                    (app) => new Date(app.startTime).getHours() === hour
                 );
                 return (
                     <div
@@ -25,9 +25,9 @@ const DailyCalendar = ({ onTimeSlotClick, appointments }) => {
                         <div className="time-label">{formatTime(hour)}</div>
                         <div className="appointment-details">
                             {appointment ? (
-                                <span>{appointment.title} - {appointment.clientName}</span>
+                                <span>{appointment.serviceName} - {appointment.clientName}</span>
                             ) : (
-                                <span>No appointment</span>
+                                <span>Sem agendamentos</span>
                             )}
                         </div>
                     </div>
