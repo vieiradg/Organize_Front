@@ -79,8 +79,8 @@ const AppointmentModal = ({ isOpen, onClose, selectedHour, onAppointmentCreated 
             const appointmentData = {
                 customerId: finalCustomerId,
                 serviceId: selectedServiceId,
-                establishmentId: '00000000-0000-00,00-0000-000000000000',
-                employeeId: '00000000-0000-0000-0000-000000000000', 
+                establishmentId: selectedEstablishmentId,
+                employeeId: selectedEmployeeId,
                 startTime: startTime.toISOString(),
                 endTime: endTime.toISOString(),
                 status: 'CONFIRMED',
@@ -168,6 +168,39 @@ const AppointmentModal = ({ isOpen, onClose, selectedHour, onAppointmentCreated 
                             ))}
                         </select>
                     </div>
+
+                    <div className="form-group">
+                        <label>Estabelecimento:</label>
+                        <select 
+                            value={selectedEstablishmentId}
+                            onChange={(e) => setSelectedEstablishmentId(e.target.value)}
+                            required
+                        >
+                            <option value="">Selecione um estabelecimento</option>
+                            {establishments.map(establishment => (
+                                <option key={establishment.id} value={establishment.id}>
+                                    {establishment.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div className="form-group">
+                        <label>Funcionário:</label>
+                        <select 
+                            value={selectedEmployeeId}
+                            onChange={(e) => setSelectedEmployeeId(e.target.value)}
+                            required
+                        >
+                            <option value="">Selecione um funcionário</option>
+                            {employees.map(employee => (
+                                <option key={employee.id} value={employee.id}>
+                                    {employee.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
                     <div className="form-group">
                         <label>Notas do Cliente:</label>
                         <textarea
