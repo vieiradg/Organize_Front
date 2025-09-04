@@ -8,7 +8,7 @@ const WeeklyCalendar = ({ appointments }) => {
   const getAppointment = (dayIndex, hour) => {
     return appointments.find(app => {
         const appDate = new Date(app.startTime);
-        const appDay = appDate.getDay() - 1; // 0 for Monday, 1 for Tuesday, etc.
+        const appDay = appDate.getDay() - 1;
         const appHour = `${appDate.getHours()}:00h`;
         return appDay === dayIndex && appHour === hour;
     });
