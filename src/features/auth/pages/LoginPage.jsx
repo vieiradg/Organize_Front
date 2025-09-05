@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import authService from '../authService';
 import '../Auth.css';
 
 export default function LoginPage() {
@@ -8,20 +9,14 @@ export default function LoginPage() {
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        setError(''); 
+        setError('');
 
-        //LOGIN DE DEMONSTRAÇÃO 
- 
-        const demoUser = 'admin';
-        const demoPass = '12345';
-
-        if (username === demoUser && password === demoPass) {
-            console.log('Login de demonstração bem-sucedido!');
-            localStorage.setItem('demo_token', 'true'); 
+        try {
+            await authService.login(username, password);
             navigate('/dashboard');
-        } else {
+        } catch (err) {
             setError('Utilizador ou senha inválidos.');
         }
     };
@@ -45,7 +40,7 @@ export default function LoginPage() {
                             id="username" 
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
-                            placeholder="Use 'admin'" 
+                            placeholder="Digite seu email" 
                             required 
                         />
                     </div>
@@ -56,7 +51,7 @@ export default function LoginPage() {
                             id="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            placeholder="Use '12345'" 
+                            placeholder="Digite sua senha" 
                             required 
                         />
                     </div>
