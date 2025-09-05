@@ -17,6 +17,7 @@ import EquipePage from '../features/equipe/pages/EquipePage';
 
 import '../features/auth/Auth.css';
 import '../layouts/DashboardLayout.css';
+import FaleConosco from '../features/landing/pages/Contato';
 
 export default function AppRoutes() {
   return (
@@ -27,6 +28,7 @@ export default function AppRoutes() {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
+        <Route path="/faleConosco" element={<FaleConosco />} />
 
         <Route element={<DashboardLayout />}>
           <Route path="/dashboard" element={<DashboardPage />} />
