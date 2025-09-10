@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import api from '/src/services/api';
 import '../Auth.css';
 
 export default function LoginPage() {
@@ -8,21 +9,32 @@ export default function LoginPage() {
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        setError(''); 
+        setError('');
 
-        //LOGIN DE DEMONSTRAÇÃO 
- 
-        const demoUser = 'admin';
-        const demoPass = '12345';
+        try {
+            const response = await api.post('/auth/login', {
+                username: username,
+                password: password
+            });
 
-        if (username === demoUser && password === demoPass) {
-            console.log('Login de demonstração bem-sucedido!');
-            localStorage.setItem('demo_token', 'true'); 
+            const { token, user, establishmentId } = response.data;
+            
+            localStorage.setItem('token', token);
+            localStorage.setItem('establishmentId', establishmentId);
+            localStorage.setItem('userName', user.name); 
+            localStorage.setItem('userId', user.id); 
+
+            console.log('Login bem-sucedido!');
             navigate('/dashboard');
-        } else {
-            setError('Utilizador ou senha inválidos.');
+            
+        } catch (err) {
+            const errorMessage = err.response && err.response.data && err.response.data.message 
+                             ? err.response.data.message 
+                             : 'Erro no login. Verifique suas credenciais.';
+            setError(errorMessage);
+            console.error('Erro no login:', err);
         }
     };
 
@@ -39,13 +51,13 @@ export default function LoginPage() {
                     {error && <p className="error-message">{error}</p>}
 
                     <div className="form-group">
-                        <label htmlFor="username">Utilizador:</label>
+                        <label htmlFor="username">Utilizador (Email):</label>
                         <input 
                             type="text"
                             id="username" 
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
-                            placeholder="Use 'admin'" 
+                            placeholder="seu.email@exemplo.com"
                             required 
                         />
                     </div>
@@ -56,7 +68,7 @@ export default function LoginPage() {
                             id="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            placeholder="Use '12345'" 
+                            placeholder="Sua senha" 
                             required 
                         />
                     </div>

@@ -69,6 +69,26 @@
     color: white;
 }
 
+.link-menu-lateral.link-sair {
+    margin-top: auto; /* Empurra para o final da barra lateral */
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    text-align: left;
+    color: var(--cor-texto-sidebar);
+    width: 100%;
+    padding: 0.75rem 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.link-menu-lateral.link-sair:hover {
+    background-color: var(--cor-hover-sidebar);
+    color: white;
+}
+
+
 .conteudo-principal-dashboard {
     flex-grow: 1;
     display: flex;

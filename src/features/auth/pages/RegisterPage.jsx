@@ -4,7 +4,9 @@ import '../Auth.css';
 import api from '../../../services/api.js';
 
 export default function Register() {
-    const [username, setUsername] = useState('');
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [phone, setPhone] = useState('');
     const [password, setPassword] = useState('');
     const [errors, setErrors] = useState({});
     const [successMessage, setSuccessMessage] = useState('');
@@ -17,9 +19,10 @@ export default function Register() {
 
         try {
             await api.post('/auth/register', {
-                username,
+                name,
+                email,
+                phone,
                 password,
-                roles: ['ROLE_PROFESSIONAL']
             });
             
             setSuccessMessage('Registro bem-sucedido! Você será redirecionado para o login em 3 segundos.');
@@ -31,7 +34,7 @@ export default function Register() {
         } catch (error) {
             const newErrors = {};
             if (error.response && error.response.status === 400) {
-                newErrors.api = 'Nome de usuário já existe.';
+                newErrors.api = 'Email já existe ou dados inválidos.';
             } else {
                 newErrors.api = 'Ocorreu um erro no registro. Tente novamente.';
             }
@@ -53,13 +56,35 @@ export default function Register() {
                     {successMessage && <p className="success-message">{successMessage}</p>}
 
                     <div className="form-group">
-                        <label htmlFor="username">Usuário (ou Email):</label>
+                        <label htmlFor="name">Nome:</label>
                         <input 
                             type="text"
-                            id="username"
-                            placeholder="Escolha um nome de usuário"
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
+                            id="name"
+                            placeholder="Seu nome completo"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            required
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="email">Email:</label>
+                        <input 
+                            type="email"
+                            id="email"
+                            placeholder="Seu email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            required
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="phone">Telefone:</label>
+                        <input 
+                            type="tel"
+                            id="phone"
+                            placeholder="Seu telefone"
+                            value={phone}
+                            onChange={(e) => setPhone(e.target.value)}
                             required
                         />
                     </div>

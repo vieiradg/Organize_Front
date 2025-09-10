@@ -1,41 +1,103 @@
 .service-page {
     padding: 2rem;
-    max-width: 800px;
+    max-width: 900px;
     margin: 0 auto;
 }
 
-.service-form-section {
-    background: white;
-    padding: 2rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    margin-bottom: 2rem;
-}
-
-.service-list-section {
-    background: white;
-    padding: 2rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-.service-list ul {
-    list-style: none;
-    padding: 0;
-}
-
-.service-list li {
-    padding: 0.8rem 0;
-    border-bottom: 1px solid #eee;
+.page-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin-bottom: 2rem;
 }
 
-.service-list li:last-child {
-    border-bottom: none;
+.page-header h1 {
+    font-size: 2rem;
+    color: #333;
 }
 
-.service-list li span {
-    color: #555;
+.card {
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    padding: 1.5rem;
+}
+
+.widget-titulo {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #4a5568;
+    margin-bottom: 1.5rem;
+    border-bottom: 2px solid #edf2f7;
+    padding-bottom: 0.75rem;
+}
+
+.add-item-form .form-row {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.add-item-form .form-group {
+    flex: 1;
+}
+
+.add-item-form label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #718096;
+    margin-bottom: 0.5rem;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.dashboard-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+    text-align: left;
+}
+
+.dashboard-table thead tr {
+    background-color: #f7fafc;
+    color: #4a5568;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.dashboard-table th,
+.dashboard-table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.dashboard-table tbody tr:hover {
+    background-color: #f0f4f8;
+}
+
+.dashboard-table .actions-cell {
+    width: 120px;
+    white-space: nowrap;
+}
+
+.action-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    transition: color 0.2s;
+}
+
+.action-button:hover {
+    color: #2b6cb0;
+}
+
+.action-button.delete:hover {
+    color: #e53e3e;
 }

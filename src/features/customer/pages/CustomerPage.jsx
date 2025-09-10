@@ -1,5 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import api from '../../../services/api.js'; // Ajuste o caminho se necessário
+import api from '../../../services/api.js';
+
+import Card from '../../../components/UI/Card/Card';
+import Button from '../../../components/UI/Button/Button';
+import Input from '../../../components/UI/Input/Input';
+import Modal from '../../../components/UI/Modal/Modal';
 
 const AcoesIcone = () => (
     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icone-acao">
@@ -9,20 +14,31 @@ const AcoesIcone = () => (
     </svg>
 );
 
-
 export default function CustomerPage() {
+    const [establishmentId, setEstablishmentId] = useState('');
     const [customers, setCustomers] = useState([]);
     const [newCustomerName, setNewCustomerName] = useState('');
-    const [newCustomerEmail, setNewCustomerEmail] = useState(''); 
+    const [newCustomerEmail, setNewCustomerEmail] = useState('');
     const [newCustomerPhone, setNewCustomerPhone] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    const fetchCustomers = async () => {
+    useEffect(() => {
+        const storedEstablishmentId = localStorage.getItem('establishmentId');
+        if (storedEstablishmentId) {
+            setEstablishmentId(storedEstablishmentId);
+            fetchCustomers(storedEstablishmentId);
+        } else {
+            setError('ID do estabelecimento não encontrado. Faça login novamente.');
+        }
+    }, []);
+
+    const fetchCustomers = async (id) => {
+        if (!id) return;
         setLoading(true);
-        setError(null); // Limpa erros anteriores
+        setError(null);
         try {
-            const response = await api.get('/api/customers');
+            const response = await api.get(`/api/establishments/${id}/clients`);
             setCustomers(response.data);
         } catch (err) {
             console.error('Erro ao buscar clientes:', err);
@@ -32,24 +48,26 @@ export default function CustomerPage() {
         }
     };
 
-    useEffect(() => {
-        fetchCustomers();
-    }, []);
-
     const handleAddCustomer = async (e) => {
         e.preventDefault();
-        setLoading(true);
-        setError(null);
+        
+        if (!establishmentId) {
+            setError('ID do estabelecimento não encontrado. Não é possível salvar.');
+            return;
+        }
+
+        const customerData = {
+            name: newCustomerName,
+            email: newCustomerEmail,
+            phone: newCustomerPhone,
+        };
+
         try {
-            await api.post('/api/customers', {
-                name: newCustomerName,
-                email: newCustomerEmail,
-                phone: newCustomerPhone,
-            });
+            await api.post(`/api/establishments/${establishmentId}/clients`, customerData);
             setNewCustomerName('');
             setNewCustomerEmail('');
             setNewCustomerPhone('');
-            fetchCustomers();
+            fetchCustomers(establishmentId);
         } catch (err) {
             console.error('Erro ao adicionar cliente:', err);
             setError('Erro ao adicionar cliente. Verifique os dados.');
@@ -62,7 +80,7 @@ export default function CustomerPage() {
         <div>
             <h1 className="titulo-secao-dashboard">Meus Clientes</h1>
 
-            <div className="widget-card" style={{ marginBottom: '1.5rem' }}>
+            <Card style={{ marginBottom: '1.5rem' }}>
                 <h3 className="widget-titulo">Adicionar Novo Cliente</h3>
                 <form onSubmit={handleAddCustomer} className="add-item-form">
                     <div className="form-row">
@@ -97,9 +115,9 @@ export default function CustomerPage() {
                         {loading ? 'A Adicionar...' : 'Adicionar Cliente'}
                     </button>
                 </form>
-            </div>
+            </Card>
 
-            <div className="widget-card">
+            <Card>
                 <h3 className="widget-titulo">Lista de Clientes</h3>
                 {error && <p className="error-message">{error}</p>}
                 <div className="table-container">
@@ -122,11 +140,11 @@ export default function CustomerPage() {
                             ) : customers.length > 0 ? (
                                 customers.map(customer => (
                                     <tr key={customer.id}>
-                                        <td>{customer.name}</td>
-                                        <td>{customer.email || 'N/A'}</td>
-                                        <td>{customer.phone || 'N/A'}</td>
-                                        <td>{customer.lastVisit || 'N/A'}</td> 
-                                        <td>{customer.appointments || 0}</td> 
+                                        <td>{customer.clientName}</td>
+                                        <td>{customer.clientEmail || 'N/A'}</td>
+                                        <td>{customer.clientPhone || 'N/A'}</td>
+                                        <td>{customer.lastVisit || 'N/A'}</td>
+                                        <td>{customer.appointments || 0}</td>
                                         <td>
                                             <button className="action-button">
                                                 <AcoesIcone />
@@ -142,7 +160,7 @@ export default function CustomerPage() {
                         </tbody>
                     </table>
                 </div>
-            </div>
+            </Card>
         </div>
     );
 };

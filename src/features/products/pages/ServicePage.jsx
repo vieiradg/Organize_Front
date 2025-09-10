@@ -10,35 +10,42 @@ const EditarIcone = () => ( <svg xmlns="http://www.w3.org/2000/svg" width="18" h
 const DeletarIcone = () => ( <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg> );
 
 export default function ServicePage() {
+    const [establishmentId, setEstablishmentId] = useState('');
     const [services, setServices] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [selectedService, setSelectedService] = useState(null);
-    const [formData, setFormData] = useState({ name: '', duration: '', price: '', imageUrl: '' });
+    const [formData, setFormData] = useState({ name: '', durationMinutes: '', priceCents: '' });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        fetchServices();
+        const storedEstablishmentId = localStorage.getItem('establishmentId');
+        if (storedEstablishmentId) {
+            setEstablishmentId(storedEstablishmentId);
+            fetchServices(storedEstablishmentId);
+        } else {
+            setError('ID do estabelecimento não encontrado. Faça login novamente.');
+        }
     }, []);
 
     useEffect(() => {
         if (selectedService) {
             setFormData({
                 name: selectedService.name || '',
-                duration: selectedService.duration || '',
-                price: selectedService.price || '',
-                imageUrl: selectedService.imageUrl || ''
+                durationMinutes: selectedService.durationMinutes || '',
+                priceCents: selectedService.priceCents ? (selectedService.priceCents / 100).toFixed(2) : '',
             });
         } else {
-            setFormData({ name: '', duration: '', price: '', imageUrl: '' });
+            setFormData({ name: '', durationMinutes: '', priceCents: '' });
         }
     }, [selectedService]);
 
-    const fetchServices = async () => {
+    const fetchServices = async (id) => {
+        if (!id) return;
         setLoading(true);
         setError(null);
         try {
-            const response = await api.get('/api/services');
+            const response = await api.get(`/api/establishments/${id}/services`);
             setServices(response.data);
         } catch (err) {
             setError('Erro ao carregar serviços.');
@@ -54,19 +61,27 @@ export default function ServicePage() {
 
     const handleSave = async (e) => {
         e.preventDefault();
+
+        if (!establishmentId) {
+            setError('ID do estabelecimento não encontrado. Não é possível salvar.');
+            return;
+        }
+
         const serviceData = {
-            ...formData,
-            price: parseFloat(formData.price),
-            duration: parseInt(formData.duration)
+            name: formData.name,
+            description: '',
+            priceCents: Math.round(parseFloat(formData.priceCents.replace(',', '.')) * 100),
+            durationMinutes: parseInt(formData.durationMinutes),
+            establishmentId: establishmentId
         };
 
         try {
             if (selectedService) {
-                await api.put(`/api/services/${selectedService.id}`, serviceData);
+                await api.put(`/api/establishments/${establishmentId}/services/${selectedService.id}`, serviceData);
             } else {
-                await api.post('/api/services', serviceData);
+                await api.post(`/api/establishments/${establishmentId}/services`, serviceData);
             }
-            fetchServices();
+            fetchServices(establishmentId);
             closeModal();
         } catch (err) {
             setError("Não foi possível salvar o serviço.");
@@ -74,10 +89,14 @@ export default function ServicePage() {
     };
 
     const handleDelete = async (id) => {
+        if (!establishmentId) {
+            setError('ID do estabelecimento não encontrado. Não é possível excluir.');
+            return;
+        }
         if (window.confirm('Tem certeza que deseja apagar este serviço?')) {
             try {
-                await api.delete(`/api/services/${id}`);
-                fetchServices();
+                await api.delete(`/api/establishments/${establishmentId}/services/${id}`);
+                fetchServices(establishmentId);
             } catch (err) {
                 setError("Não foi possível apagar o serviço.");
             }
@@ -86,12 +105,22 @@ export default function ServicePage() {
     
     const openModal = (service = null) => {
         setSelectedService(service);
+        if (service) {
+            setFormData({
+                name: service.name || '',
+                durationMinutes: service.durationMinutes || '',
+                priceCents: service.priceCents ? (service.priceCents / 100).toFixed(2) : '',
+            });
+        } else {
+            setFormData({ name: '', durationMinutes: '', priceCents: '' });
+        }
         setShowModal(true);
     };
 
     const closeModal = () => {
         setShowModal(false);
         setSelectedService(null);
+        setFormData({ name: '', durationMinutes: '', priceCents: '' });
     };
 
     return (
@@ -108,7 +137,6 @@ export default function ServicePage() {
                     <table className="dashboard-table">
                         <thead>
                             <tr>
-                                <th>Foto</th>
                                 <th>Serviço</th>
                                 <th>Duração</th>
                                 <th>Preço</th>
@@ -117,19 +145,28 @@ export default function ServicePage() {
                         </thead>
                         <tbody>
                             {loading ? (
-                                <tr><td colSpan="5">A carregar...</td></tr>
-                            ) : services.map(service => (
-                                <tr key={service.id}>
-                                    <td><img src={service.imageUrl || 'https://placehold.co/50x50/e5e7eb/6b7280?text=Img'} alt={service.name} className="table-image" /></td>
-                                    <td>{service.name}</td>
-                                    <td>{service.duration} min</td>
-                                    <td>R$ {service.price ? service.price.toFixed(2).replace('.', ',') : '0,00'}</td>
-                                    <td className="actions-cell">
-                                        <button onClick={() => openModal(service)} className="action-button icon-button"><EditarIcone /></button>
-                                        <button onClick={() => handleDelete(service.id)} className="action-button icon-button delete"><DeletarIcone /></button>
-                                    </td>
+                                <tr><td colSpan="4">A carregar...</td></tr>
+                            ) : services.length > 0 ? (
+                                services.map(service => (
+                                    <tr key={service.id}>
+                                        <td>{service.name}</td>
+                                        <td>{service.durationMinutes} min</td>
+                                        <td>R$ {(service.priceCents / 100).toFixed(2).replace('.', ',')}</td>
+                                        <td className="actions-cell">
+                                            <button onClick={() => openModal(service)} className="action-button icon-button">
+                                                <EditarIcone />
+                                            </button>
+                                            <button onClick={() => handleDelete(service.id)} className="action-button icon-button delete">
+                                                <DeletarIcone />
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td colSpan="4">Nenhum serviço cadastrado ainda.</td>
                                 </tr>
-                            ))}
+                            )}
                         </tbody>
                     </table>
                 </div>
@@ -145,18 +182,14 @@ export default function ServicePage() {
                                 <Input id="name" name="name" type="text" placeholder="Nome do Serviço" value={formData.name} onChange={handleInputChange} required />
                             </div>
                             <div className="form-group">
-                                <label htmlFor="duration">Duração (min)</label>
-                                <Input id="duration" name="duration" type="number" placeholder="60" value={formData.duration} onChange={handleInputChange} required />
+                                <label htmlFor="durationMinutes">Duração (min)</label>
+                                <Input id="durationMinutes" name="durationMinutes" type="number" placeholder="60" value={formData.durationMinutes} onChange={handleInputChange} required />
                             </div>
                         </div>
                         <div className="form-row">
                             <div className="form-group">
-                                <label htmlFor="price">Preço (R$)</label>
-                                <Input id="price" name="price" type="number" step="0.01" placeholder="150.00" value={formData.price} onChange={handleInputChange} required />
-                            </div>
-                            <div className="form-group">
-                                <label htmlFor="imageUrl">URL da Foto</label>
-                                <Input id="imageUrl" name="imageUrl" type="text" placeholder="https://..." value={formData.imageUrl} onChange={handleInputChange} />
+                                <label htmlFor="priceCents">Preço (R$)</label>
+                                <Input id="priceCents" name="priceCents" type="number" step="0.01" placeholder="150.00" value={formData.priceCents} onChange={handleInputChange} required />
                             </div>
                         </div>
                         <div className="modal-actions">
