@@ -22,9 +22,9 @@ export default function Register() {
                 name,
                 email,
                 phone,
-                password,
+                password
             });
-            
+
             setSuccessMessage('Registro bem-sucedido! Você será redirecionado para o login em 3 segundos.');
 
             setTimeout(() => {
@@ -66,32 +66,34 @@ export default function Register() {
                             required
                         />
                     </div>
+                    
                     <div className="form-group">
                         <label htmlFor="email">Email:</label>
                         <input 
                             type="email"
                             id="email"
-                            placeholder="Seu email"
+                            placeholder="Seu melhor email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             required
                         />
                     </div>
+                    
                     <div className="form-group">
-                        <label htmlFor="phone">Telefone:</label>
+                        <label htmlFor="phone">Telefone (opcional):</label>
                         <input 
                             type="tel"
                             id="phone"
-                            placeholder="Seu telefone"
+                            placeholder="Seu telefone (opcional)"
                             value={phone}
                             onChange={(e) => setPhone(e.target.value)}
-                            required
                         />
                     </div>
+                    
                     <div className="form-group">
                         <label htmlFor="password">Senha:</label>
                         <input 
-                            type="password" 
+                            type="password"
                             id="password"
                             placeholder="Crie uma senha segura"
                             value={password}
