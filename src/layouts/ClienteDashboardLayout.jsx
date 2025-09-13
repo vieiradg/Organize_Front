@@ -64,7 +64,7 @@ export default function ClienteDashboardLayout() {
           </div>
         </header>
 
-        <main className="secao-principal-dashboard">
+        <main className="secao-principasl-dashboard">
           <Outlet />
         </main>
       </div>

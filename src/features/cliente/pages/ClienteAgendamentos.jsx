@@ -25,7 +25,7 @@ export default function ClienteAgendamentos() {
 
   return (
     <div>
-      <h1 className="titulo-secao-dashboard">Meus Agendamentos</h1>
+      <h1 className="titulo-secao-dashboard">Meuss Agendamentos</h1>
 
       {loading ? (
         <p>Carregando agendamentos...</p>

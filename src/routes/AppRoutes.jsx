@@ -1,5 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
+import ProtectedRoute from './ProtectedRoute';
+
 import DashboardLayout from '../layouts/DashboardLayout';
 import ClienteDashboardLayout from '../layouts/ClienteDashboardLayout';
 
@@ -21,38 +23,44 @@ import EstablishmentPage from '../features/establishment/pages/EstablishmentPage
 import AgendamentosCliente from '../features/cliente/pages/ClienteAgendamentos';
 import ConfiguracoesCliente from '../features/cliente/pages/ClienteConfiguracoes';
 
+import FaleConosco from '../features/landing/pages/Contato';
 
 import '../features/auth/Auth.css';
 import '../layouts/DashboardLayout.css';
 
 export default function AppRoutes() {
-    return (
-        <BrowserRouter>
-            <Routes>
-                <Route path="/" element={<LandingPage />} />
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/register" element={<RegisterPage />} />
-                <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-                <Route path="/reset-password" element={<ResetPasswordPage />} />
+  return (
+    <BrowserRouter>
+      <Routes>
+      
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
+        <Route path="/contato" element={<FaleConosco />} />
 
-                {/* Admin Dashboard */}
-                <Route element={<DashboardLayout />}>
-                    <Route path="/dashboard" element={<DashboardPage />} />
-                    <Route path="/agenda" element={<AgendaPage />} />
-                    <Route path="/customers" element={<CustomerPage />} />
-                    <Route path="/services" element={<ServicePage />} />
-                    <Route path="/financeiro" element={<FinanceiroPage />} />
-                    <Route path="/configuracoes" element={<ConfiguracoesPage />} />
-                    <Route path="/equipe" element={<EquipePage />} />
-                    <Route path="/establishment" element={<EstablishmentPage />} />
-                </Route>
+        
+        <Route element={<ProtectedRoute />}>
+          {/* Admin Dashboard */}
+          <Route element={<DashboardLayout />}>
+            <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/agenda" element={<AgendaPage />} />
+            <Route path="/customers" element={<CustomerPage />} />
+            <Route path="/services" element={<ServicePage />} />
+            <Route path="/financeiro" element={<FinanceiroPage />} />
+            <Route path="/configuracoes" element={<ConfiguracoesPage />} />
+            <Route path="/equipe" element={<EquipePage />} />
+            <Route path="/establishment" element={<EstablishmentPage />} />
+          </Route>
 
-                {/* Cliente Dashboard */}
-                <Route path="/cliente" element={<ClienteDashboardLayout />}>
-                    <Route index element={<AgendamentosCliente />} />
-                    <Route path="configuracoes" element={<ConfiguracoesCliente />} />
-                </Route>
-            </Routes>
-        </BrowserRouter>
-    );
+         
+          <Route path="/cliente" element={<ClienteDashboardLayout />}>
+            <Route index element={<AgendamentosCliente />} />
+            <Route path="configuracoes" element={<ConfiguracoesCliente />} />
+          </Route>
+        </Route>
+      </Routes>
+    </BrowserRouter>
+  );
 }
