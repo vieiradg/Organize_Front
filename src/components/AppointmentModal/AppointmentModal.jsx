@@ -10,6 +10,7 @@ const AppointmentModal = ({ isOpen, onClose, selectedHour, onAppointmentCreated 
     const [newCustomerName, setNewCustomerName] = useState('');
     const [newCustomerPhone, setNewCustomerPhone] = useState('');
     const [selectedServiceId, setSelectedServiceId] = useState('');
+    const [clientNotes, setClientNotes] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
@@ -77,10 +78,13 @@ const AppointmentModal = ({ isOpen, onClose, selectedHour, onAppointmentCreated 
 
             const appointmentData = {
                 customerId: finalCustomerId,
-                serviceIds: [parseInt(selectedServiceId)],
+                serviceId: selectedServiceId,
+                establishmentId: selectedEstablishmentId,
+                employeeId: selectedEmployeeId,
                 startTime: startTime.toISOString(),
                 endTime: endTime.toISOString(),
                 status: 'CONFIRMED',
+                clientNotes: clientNotes,
             };
 
             await api.post('/api/appointments', appointmentData);
@@ -159,10 +163,51 @@ const AppointmentModal = ({ isOpen, onClose, selectedHour, onAppointmentCreated 
                             <option value="">Selecione um serviço</option>
                             {services.map(service => (
                                 <option key={service.id} value={service.id}>
-                                    {service.name} (R$ {service.price.toFixed(2)}) - {service.duration} min
+                                    {service.name} (R$ {(service.priceCents / 100).toFixed(2)}) - {service.duration} min
                                 </option>
                             ))}
                         </select>
+                    </div>
+
+                    <div className="form-group">
+                        <label>Estabelecimento:</label>
+                        <select 
+                            value={selectedEstablishmentId}
+                            onChange={(e) => setSelectedEstablishmentId(e.target.value)}
+                            required
+                        >
+                            <option value="">Selecione um estabelecimento</option>
+                            {establishments.map(establishment => (
+                                <option key={establishment.id} value={establishment.id}>
+                                    {establishment.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div className="form-group">
+                        <label>Funcionário:</label>
+                        <select 
+                            value={selectedEmployeeId}
+                            onChange={(e) => setSelectedEmployeeId(e.target.value)}
+                            required
+                        >
+                            <option value="">Selecione um funcionário</option>
+                            {employees.map(employee => (
+                                <option key={employee.id} value={employee.id}>
+                                    {employee.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div className="form-group">
+                        <label>Notas do Cliente:</label>
+                        <textarea
+                            placeholder="Notas do cliente"
+                            value={clientNotes}
+                            onChange={(e) => setClientNotes(e.target.value)}
+                        />
                     </div>
                     <button type="submit" className="login-button" disabled={loading}>
                         {loading ? 'Salvando...' : 'Salvar Agendamento'}

@@ -14,25 +14,36 @@ export default function LoginPage() {
         setError('');
 
         try {
+            const trimmedUsername = username.trim();
+            const trimmedPassword = password.trim();
+
             const response = await api.post('/auth/login', {
-                username: username,
-                password: password
+                username: trimmedUsername,
+                password: trimmedPassword
             });
 
-            const { token, user, establishmentId } = response.data;
+            const { token, user, establishmentId, role } = response.data;
             
+            console.log("Papel do usuário recebido:", role);
+
             localStorage.setItem('token', token);
             localStorage.setItem('establishmentId', establishmentId);
             localStorage.setItem('userName', user.name); 
-            localStorage.setItem('userId', user.id); 
+            localStorage.setItem('userId', user.id);
+            localStorage.setItem('userRole', role); 
 
             console.log('Login bem-sucedido!');
-            navigate('/dashboard');
-            
+
+            if (role === 'ROLE_CUSTOMER') {
+                navigate('/cliente');
+            } else {
+                navigate('/dashboard');
+            }
+
         } catch (err) {
             const errorMessage = err.response && err.response.data && err.response.data.message 
-                             ? err.response.data.message 
-                             : 'Erro no login. Verifique suas credenciais.';
+                ? err.response.data.message 
+                : 'Erro no login. Verifique suas credenciais.';
             setError(errorMessage);
             console.error('Erro no login:', err);
         }
