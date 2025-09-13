@@ -91,6 +91,27 @@ export default function Register() {
                     </div>
                     
                     <div className="form-group">
+                        <label htmlFor="email">Email:</label>
+                        <input 
+                            type="email" 
+                            id="email"
+                            placeholder="Seu melhor email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            required
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="phone">Telefone (opcional):</label>
+                        <input 
+                            type="tel" 
+                            id="phone"
+                            placeholder="Seu telefone (opcional)"
+                            value={phone}
+                            onChange={(e) => setPhone(e.target.value)}
+                        />
+                    </div>
+                    <div className="form-group">
                         <label htmlFor="password">Senha:</label>
                         <input 
                             type="password"

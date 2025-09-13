@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom';
 
 import ProtectedRoute from './ProtectedRoute';
 
@@ -32,7 +32,6 @@ export default function AppRoutes() {
   return (
     <BrowserRouter>
       <Routes>
-      
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
@@ -40,9 +39,7 @@ export default function AppRoutes() {
         <Route path="/reset-password" element={<ResetPasswordPage />} />
         <Route path="/contato" element={<FaleConosco />} />
 
-        
         <Route element={<ProtectedRoute />}>
-          {/* Admin Dashboard */}
           <Route element={<DashboardLayout />}>
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/agenda" element={<AgendaPage />} />
@@ -54,7 +51,6 @@ export default function AppRoutes() {
             <Route path="/establishment" element={<EstablishmentPage />} />
           </Route>
 
-         
           <Route path="/cliente" element={<ClienteDashboardLayout />}>
             <Route index element={<AgendamentosCliente />} />
             <Route path="configuracoes" element={<ConfiguracoesCliente />} />
