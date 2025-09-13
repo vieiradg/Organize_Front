@@ -1,10 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { supabase } from "../../../services/supabaseClient";
 import './Landing.css';
-import Button from '../../../components/UI/Button/Button';
-import { useNavigate } from 'react-router-dom';
 
-// Ícones SVG
+// Ícones SVG (minimizados para clareza)
 const CalendarioIcone = () => ( <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icone"><path d="M8 2v4"></path><path d="M16 2v4"></path><rect width="18" height="18" x="3" y="4" rx="2"></rect><path d="M3 10h18"></path></svg> );
 const UsuariosIcone = () => ( <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icone"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg> );
 const DinheiroIcone = () => ( <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icone"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg> );
@@ -18,64 +17,88 @@ const EmailIcone = () => ( <svg xmlns="http://www.w3.org/2000/svg" width="24" he
 const TelefoneIcone = () => ( <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icone"><path d="M22 16.92v3a2 2 0 0 1-2.18 2h-4a2 2 0 0 1-2-2 17.86 17.86 0 0 1-2.9-2.9 17.86 17.86 0 0 1-2.9-2.9 2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2.18 19.84 19.84 0 0 0 .5 2.19 2 2 0 0 1-.22 2.22l-1.9 1.9a15.42 15.42 0 0 0 3 3l1.9-1.9a2 2 0 0 1 2.22-.22 19.84 19.84 0 0 0 2.2.5 2 2 0 0 1 2.18 2z"></path></svg> );
 
 export default function LandingPage() {
-  const navigate = useNavigate()
+    // --- LÓGICA DO FORMULÁRIO DE CONTATO ---
+    const [nome, setNome] = useState("");
+    const [contato, setContato] = useState("");
+    const [conteudoMensagem, setConteudoMensagem] = useState("");
+    const [feedback, setFeedback] = useState("");
+
+    const handleSubmitContato = async (e) => {
+        e.preventDefault();
+        setFeedback("A enviar...");
+
+        const { error } = await supabase
+            .from("contatos")
+            .insert([{ nome, contato, mensagem: conteudoMensagem }]);
+
+        if (error) {
+            setFeedback("❌ Erro ao enviar: " + error.message);
+        } else {
+            setFeedback("✅ Mensagem enviada com sucesso!");
+            setNome("");
+            setContato("");
+            setConteudoMensagem("");
+        }
+    };
+    // --- FIM DA LÓGICA DO FORMULÁRIO ---
+
   return (
     <div className="pagina-principal">
-      <header className="cabecalho">
-        <div className="cabecalho-container">
-          <h3 className="logo">Organize</h3>
-          <nav className="menu-navegacao">
-            <a href="#beneficios" className="link-menu">Benefícios</a>
-            <a href="#funcionalidades" className="link-menu">Funcionalidades</a>
-            <a href="#depoimentos" className="link-menu">Depoimentos</a>
-            <a href="#cta" className="link-menu">Contato</a>
-          </nav>
-          <Link to="/login" className="botao-header">
+        <header className="cabecalho">
+          <div className="cabecalho-container">
+            <h3 className="logo">Organize</h3>
+            <nav className="menu-navegacao">
+              <a href="#beneficios" className="link-menu">Benefícios</a>
+              <a href="#funcionalidades" className="link-menu">Funcionalidades</a>
+              <a href="#depoimentos" className="link-menu">Depoimentos</a>
+              <a href="#contato" className="link-menu">Contato</a>
+            </nav>
+            <Link to="/login" className="botao-header">
               Entrar
-          </Link>
-        </div>
-      </header>
+            </Link>
+          </div>
+        </header>
 
-      <section className="secao-hero">
-        <div className="sobreposicao"></div>
-        <div className="conteudo-principal">
-          <div className="secao-hero-grid">
-            <div className="texto-hero">
-              <div className="etiqueta">
-                Programa de Agendamento Profissional
+        <section className="secao-hero">
+          <div className="sobreposicao"></div>
+          <div className="conteudo-principal">
+            <div className="secao-hero-grid">
+              <div className="texto-hero">
+                <div className="etiqueta">
+                  Programa de Agendamento Profissional
+                </div>
+                <h1 className="titulo-principal">
+                  Organize sua Agenda e{" "}
+                  <span className="destaque-titulo">Transforme</span> seu Negócio
+                </h1>
+                <p className="subtitulo-principal">
+                  Software completo para agendamentos, gestão de clientes, relatórios de desempenho e muito mais.
+                </p>
+                <div className="botoes-hero">
+                  <Link to="/register" className="botao-primario">
+                    <CalendarioIcone />
+                    Teste Grátis por 7 Dias
+                  </Link>
+                  <a href="#funcionalidades" className="botao-secundario">
+                    Saiba Mais
+                    <SetaDireitaIcone />
+                  </a>
+                </div>
               </div>
-              <h1 className="titulo-principal">
-                Organize sua Agenda e{" "}
-                <span className="destaque-titulo">Transforme</span> seu Negócio
-              </h1>
-              <p className="subtitulo-principal">
-                Software completo para agendamentos, gestão de clientes, relatórios de desempenho e muito mais.
-              </p>
-              <div className="botoes-hero">
-                <Link to="/register" className="botao-primario">
-                  <CalendarioIcone />
-                  Teste Grátis por 7 Dias
-                </Link>
-                <a href="#funcionalidades" className="botao-secundario">
-                  Saiba Mais
-                  <SetaDireitaIcone />
-                </a>
-              </div>
-            </div>
-            <div className="imagem-hero">
-              <div className="container-imagem">
-                <img
-                  src="https://placehold.co/600x400/99f6e4/1d4ed8?text=Dashboard+do+Organize"
-                  alt="Interface do Organize"
-                  className="imagem-dashboard"
-                />
+              <div className="imagem-hero">
+                <div className="container-imagem">
+                  <img
+                    src="https://placehold.co/600x400/99f6e4/1d4ed8?text=Dashboard+do+Organize"
+                    alt="Interface do Organize"
+                    className="imagem-dashboard"
+                  />
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <section className="secao-beneficios" id="beneficios">
+        <section className="secao-beneficios" id="beneficios">
           <div className="conteudo-principal">
             <div className="texto-central">
               <h2 className="titulo-secao">
@@ -85,7 +108,6 @@ export default function LandingPage() {
                 Descubra como nosso software pode otimizar a rotina de qualquer profissional liberal
               </p>
             </div>
-
             <div className="grid-cards">
               <div className="card card-teal">
                 <div className="card-conteudo">
@@ -127,7 +149,6 @@ export default function LandingPage() {
                 Funcionalidades completas para otimizar todos os aspetos da sua rotina profissional
               </p>
             </div>
-
             <div className="grid-funcionalidades">
               <div className="lista-funcionalidades">
                 <div className="item-funcionalidade">
@@ -159,7 +180,6 @@ export default function LandingPage() {
                   </div>
                 </div>
               </div>
-
               <div className="imagem-funcionalidade">
                 <img
                   src="https://placehold.co/600x500/99f6e4/1d4ed8?text=App+do+Organize"
@@ -223,29 +243,66 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className="secao-cta-final" id="cta">
-          <div className="conteudo-principal texto-central">
-            <div className="conteudo-cta">
-              <h2 className="titulo-cta">Pronto para otimizar a sua rotina?</h2>
-              <p className="subtitulo-cta">
-                Junte-se a milhares de profissionais que já escolheram o Organize para crescer.
-              </p>
-              <div className="botoes-cta">
-                <Link to="/register" className="botao-cta-primario">
-                  <VerificarCirculoIcone />
-                  Começar Teste Grátis
-                </Link>
-              </div>
-              <div className="beneficios-cta">
-                <div className="item-beneficio"><VerificarCirculoIcone /><span>7 dias grátis</span></div>
-                <div className="item-beneficio"><VerificarCirculoIcone /><span>Sem cartão de crédito</span></div>
-                <div className="item-beneficio"><VerificarCirculoIcone /><span>Suporte incluído</span></div>
-              </div>
-              <div>
-                <Button onClick={() => navigate("/faleConosco")} type="secondary">Fale Conosco</Button>
-              </div>
+        <section className="secao-contato" id="contato">
+            <div className="conteudo-principal">
+                <div className="texto-central">
+                    <h2 className="titulo-secao">Entre em Contato</h2>
+                    <p className="subtitulo-secao">
+                        Tem alguma dúvida ou sugestão? Adoraríamos ouvir de você.
+                    </p>
+                </div>
+                <div className="contato-grid">
+                    <div className="info-contato">
+                        <h3>Fale Conosco</h3>
+                        <p>Preencha o formulário ao lado ou utilize um dos nossos canais de atendimento para falar com a nossa equipa.</p>
+                        <div className="info-item">
+                            <EmailIcone />
+                            <span>contato@organize.com.br</span>
+                        </div>
+                        <div className="info-item">
+                            <TelefoneIcone />
+                            <span>(11) 9999-9999</span>
+                        </div>
+                    </div>
+                    <form onSubmit={handleSubmitContato} className="formulario-contato">
+                        <div className="form-group">
+                            <label htmlFor="nome">Nome</label>
+                            <input
+                                id="nome"
+                                type="text"
+                                placeholder="Seu nome completo"
+                                value={nome}
+                                onChange={(e) => setNome(e.target.value)}
+                                required
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label htmlFor="contato-form">Email ou Telefone</label>
+                            <input
+                                id="contato-form"
+                                type="text"
+                                placeholder="Seu melhor contato"
+                                value={contato}
+                                onChange={(e) => setContato(e.target.value)}
+                                required
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label htmlFor="mensagem">Mensagem</label>
+                            <textarea
+                                id="mensagem"
+                                placeholder="Escreva sua mensagem aqui..."
+                                value={conteudoMensagem}
+                                onChange={(e) => setConteudoMensagem(e.target.value)}
+                                rows="4"
+                                required
+                            ></textarea>
+                        </div>
+                        <button type="submit" className="botao-form-contato">Enviar Mensagem</button>
+                        {feedback && <p className="contato-feedback">{feedback}</p>}
+                    </form>
+                </div>
             </div>
-          </div>
         </section>
 
         <footer className="rodape">
@@ -275,6 +332,6 @@ export default function LandingPage() {
             </div>
           </div>
         </footer>
-    </div>
+      </div>
   );
 }
