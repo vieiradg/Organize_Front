@@ -24,7 +24,7 @@ export default function Register() {
                 phone,
                 password
             });
-            
+
             setSuccessMessage('Registro bem-sucedido! Você será redirecionado para o login em 3 segundos.');
 
             setTimeout(() => {
@@ -34,7 +34,7 @@ export default function Register() {
         } catch (error) {
             const newErrors = {};
             if (error.response && error.response.status === 400) {
-                newErrors.api = 'Nome de usuário já existe.';
+                newErrors.api = 'Email já existe ou dados inválidos.';
             } else {
                 newErrors.api = 'Ocorreu um erro no registro. Tente novamente.';
             }
@@ -66,10 +66,11 @@ export default function Register() {
                             required
                         />
                     </div>
+                    
                     <div className="form-group">
                         <label htmlFor="email">Email:</label>
                         <input 
-                            type="email" 
+                            type="email"
                             id="email"
                             placeholder="Seu melhor email"
                             value={email}
@@ -77,20 +78,22 @@ export default function Register() {
                             required
                         />
                     </div>
+                    
                     <div className="form-group">
                         <label htmlFor="phone">Telefone (opcional):</label>
                         <input 
-                            type="tel" 
+                            type="tel"
                             id="phone"
                             placeholder="Seu telefone (opcional)"
                             value={phone}
                             onChange={(e) => setPhone(e.target.value)}
                         />
                     </div>
+                    
                     <div className="form-group">
                         <label htmlFor="password">Senha:</label>
                         <input 
-                            type="password" 
+                            type="password"
                             id="password"
                             placeholder="Crie uma senha segura"
                             value={password}

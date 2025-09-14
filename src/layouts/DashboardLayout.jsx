@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import './DashboardLayout.css'; 
 
+// Ícones
 const GraficoIcone = () => ( <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icone"><path d="M12 20V10"></path><path d="M18 20V4"></path><path d="M6 20v-4"></path></svg> );
 const CalendarioIcone = () => ( <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icone"><path d="M8 2v4"></path><path d="M16 2v4"></path><rect width="18" height="18" x="3" y="4" rx="2"></rect><path d="M3 10h18"></path></svg> );
 const UsuariosIcone = () => ( <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icone"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg> );
@@ -12,50 +13,89 @@ const ConfigIcone = () => ( <svg xmlns="http://www.w3.org/2000/svg" width="24" h
 const SairIcone = () => ( <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icone"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg> );
 
 export default function DashboardLayout() {
-  const navigate = useNavigate();
+    const [userName, setUserName] = useState('Usuário');
+    const navigate = useNavigate();
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    navigate('/login');
-  };
+    useEffect(() => {
+        const storedUserName = localStorage.getItem('userName');
+        if (storedUserName) {
+            setUserName(storedUserName);
+        }
+    }, []);
 
-  return (
-    <div className="container-dashboard">
-      <aside className="barra-lateral">
-        <div className="logo-app">Organize</div>
-        <nav className="menu-lateral">
-          <NavLink to="/dashboard" className={({ isActive }) => isActive ? 'link-menu-lateral ativo' : 'link-menu-lateral'}>
-            <GraficoIcone />
-            <span>Dashboard</span>
-          </NavLink>
-          <NavLink to="/agenda" className={({ isActive }) => `link-menu-lateral ${isActive ? 'ativo' : ''}`}><CalendarioIcone /><span>Agenda</span></NavLink>
-          <NavLink to="/customers" className={({ isActive }) => `link-menu-lateral ${isActive ? 'ativo' : ''}`}><UsuariosIcone /><span>Clientes</span></NavLink>
-          <NavLink to="/services" className={({ isActive }) => `link-menu-lateral ${isActive ? 'ativo' : ''}`}><LapisIcone /><span>Serviços</span></NavLink>
-          <NavLink to="/equipe" className={({ isActive }) => `link-menu-lateral ${isActive ? 'ativo' : ''}`}><EquipeIcone /><span>Equipe</span></NavLink>
-          <NavLink to="/financeiro" className={({ isActive }) => `link-menu-lateral ${isActive ? 'ativo' : ''}`}><DinheiroIcone /><span>Financeiro</span></NavLink>
-          <NavLink to="/configuracoes" className={({ isActive }) => `link-menu-lateral ${isActive ? 'ativo' : ''}`}><ConfigIcone /><span>Configurações</span></NavLink>
-        </nav>
-        
-        <div className="menu-lateral-footer">
-          <button onClick={handleLogout} className="link-menu-lateral logout-button">
-            <SairIcone />
-            <span>Sair</span>
-          </button>
+    const getInitials = (name) => {
+        if (!name) return 'DN';
+        const names = name.split(' ');
+        if (names.length === 1) {
+            return names[0].charAt(0).toUpperCase();
+        }
+        return (names[0].charAt(0) + names[names.length - 1].charAt(0)).toUpperCase();
+    };
+
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('userName');
+        localStorage.removeItem('establishmentId');
+        localStorage.removeItem('userId');
+        navigate('/login', { replace: true });
+    };
+
+    return (
+        <div className="container-dashboard">
+            <aside className="barra-lateral">
+                <div className="logo-app">Organize</div>
+                <nav className="menu-lateral">
+                    <NavLink to="/dashboard" className={({ isActive }) => isActive ? 'link-menu-lateral ativo' : 'link-menu-lateral'}>
+                        <GraficoIcone />
+                        <span>Dashboard</span>
+                    </NavLink>
+                    <NavLink to="/establishment" className={({ isActive }) => isActive ? 'link-menu-lateral ativo' : 'link-menu-lateral'}>
+                         <ConfigIcone />
+                         <span>Estabelecimento</span>
+                    </NavLink>
+                    <NavLink to="/agenda" className={({ isActive }) => isActive ? 'link-menu-lateral ativo' : 'link-menu-lateral'}>
+                        <CalendarioIcone />
+                        <span>Agenda</span>
+                    </NavLink>
+                    <NavLink to="/customers" className={({ isActive }) => isActive ? 'link-menu-lateral ativo' : 'link-menu-lateral'}>
+                        <UsuariosIcone />
+                        <span>Clientes</span>
+                    </NavLink>
+                    <NavLink to="/services" className={({ isActive }) => isActive ? 'link-menu-lateral ativo' : 'link-menu-lateral'}>
+                        <LapisIcone />
+                        <span>Serviços</span>
+                    </NavLink>
+                    <NavLink to="/equipe" className={({ isActive }) => isActive ? 'link-menu-lateral ativo' : 'link-menu-lateral'}>
+                        <EquipeIcone />
+                        <span>Equipe</span>
+                    </NavLink>
+                    <NavLink to="/financeiro" className={({ isActive }) => isActive ? 'link-menu-lateral ativo' : 'link-menu-lateral'}>
+                        <DinheiroIcone />
+                        <span>Financeiro</span>
+                    </NavLink>
+                    <NavLink to="/configuracoes" className={({ isActive }) => isActive ? 'link-menu-lateral ativo' : 'link-menu-lateral'}>
+                        <ConfigIcone />
+                        <span>Configurações</span>
+                    </NavLink>
+                    <button onClick={handleLogout} className="link-menu-lateral link-sair">
+                        <SairIcone />
+                        <span>Sair</span>
+                    </button>
+                </nav>
+            </aside>
+
+            <div className="conteudo-principal-dashboard">
+                <header className="cabecalho-dashboard">
+                    <div className="saudacao">Olá, {userName}!</div>
+                    <div className="seletor-perfil">
+                        <div className="avatar">{getInitials(userName)}</div>
+                    </div>
+                </header>
+
+                <main className="secao-principal-dashboard">
+                    <Outlet />
+                </main>
+            </div>
         </div>
-      </aside>
-
-      <div className="conteudo-principal-dashboard">
-        <header className="cabecalho-dashboard">
-          <div className="saudacao">Olá, Diego!</div>
-          <div className="seletor-perfil">
-            <div className="avatar">DN</div>
-          </div>
-        </header>
-
-        <main className="secao-principal-dashboard">
-          <Outlet />
-        </main>
-      </div>
-    </div>
-  );
+    );
 }
