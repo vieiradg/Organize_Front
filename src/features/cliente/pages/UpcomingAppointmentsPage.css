@@ -1,0 +1,88 @@
+/* Arquivo: src/pages/Cliente/ProximosAgendamentos.css */
+.dashboard-cliente-container {
+  font-family: 'Poppins', sans-serif;
+}
+
+.cards-resumo-wrapper {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.card-resumo {
+  background-color: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  flex-grow: 1;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+}
+
+.card-resumo-titulo {
+  color: #555;
+  font-size: 0.9rem;
+}
+
+.card-resumo-dado-principal {
+  font-size: 2.5rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0.5rem 0;
+}
+
+.card-resumo-descricao {
+  color: #777;
+  font-size: 0.8rem;
+}
+
+.historico-container {
+  background-color: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.historico-titulo {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color: #333;
+}
+
+.historico-lista {
+  display: flex;
+  flex-direction: column;
+}
+
+.historico-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.historico-item:last-child {
+  border-bottom: none;
+}
+
+.historico-item-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.historico-item-servico {
+  font-weight: 500;
+  color: #333;
+}
+
+.historico-item-profissional {
+  color: #777;
+  font-size: 0.9rem;
+}
+
+.historico-item-data {
+  font-weight: 500;
+  color: #555;
+}
