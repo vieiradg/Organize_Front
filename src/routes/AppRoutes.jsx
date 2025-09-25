@@ -1,6 +1,4 @@
-import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom';
-
-import ProtectedRoute from './ProtectedRoute';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 import DashboardLayout from '../layouts/DashboardLayout';
 import ClienteDashboardLayout from '../layouts/ClienteDashboardLayout';
@@ -10,6 +8,7 @@ import LoginPage from '../features/auth/pages/LoginPage';
 import RegisterPage from '../features/auth/pages/RegisterPage';
 import ForgotPasswordPage from '../features/auth/pages/ForgotPasswordPage';
 import ResetPasswordPage from '../features/auth/pages/ResetPasswordPage';
+import FaleConosco from '../features/landing/pages/Contato';
 
 import DashboardPage from '../features/dashboard/pages/DashboardPage';
 import AgendaPage from '../features/agenda/pages/AgendaPage';
@@ -20,10 +19,11 @@ import ConfiguracoesPage from '../features/configuracoes/pages/ConfiguracoesPage
 import EquipePage from '../features/equipe/pages/EquipePage';
 import EstablishmentPage from '../features/establishment/pages/EstablishmentPage';
 
-import AgendamentosCliente from '../features/cliente/pages/ClienteAgendamentos';
-import ConfiguracoesCliente from '../features/cliente/pages/ClienteConfiguracoes';
+import UpcomingAppointmentsPage from '../features/cliente/pages/UpcomingAppointmentsPage';
+import ScheduleServicePage from '../features/cliente/pages/ScheduleServicePage';
+import ClientSettingsPage from '../features/cliente/pages/ClientSettingsPage';
 
-import FaleConosco from '../features/landing/pages/Contato';
+import ProtectedRoute from './ProtectedRoute';
 
 import '../features/auth/Auth.css';
 import '../layouts/DashboardLayout.css';
@@ -32,6 +32,7 @@ export default function AppRoutes() {
   return (
     <BrowserRouter>
       <Routes>
+ 
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
@@ -39,6 +40,7 @@ export default function AppRoutes() {
         <Route path="/reset-password" element={<ResetPasswordPage />} />
         <Route path="/contato" element={<FaleConosco />} />
 
+ 
         <Route element={<ProtectedRoute />}>
           <Route element={<DashboardLayout />}>
             <Route path="/dashboard" element={<DashboardPage />} />
@@ -52,8 +54,9 @@ export default function AppRoutes() {
           </Route>
 
           <Route path="/cliente" element={<ClienteDashboardLayout />}>
-            <Route index element={<AgendamentosCliente />} />
-            <Route path="configuracoes" element={<ConfiguracoesCliente />} />
+            <Route index element={<UpcomingAppointmentsPage />} />
+            <Route path="agendar" element={<ScheduleServicePage />} />
+            <Route path="configuracoes" element={<ClientSettingsPage />} />
           </Route>
         </Route>
       </Routes>

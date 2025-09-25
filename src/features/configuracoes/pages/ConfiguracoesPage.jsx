@@ -2,8 +2,12 @@ import React, { useState } from 'react';
 import Card from '../../../components/UI/Card/Card';
 import Input from '../../../components/UI/Input/Input';
 import Button from '../../../components/UI/Button/Button';
+import api from '../../../services/api';
 
 export default function ConfiguracoesPage() {
+    const userId = localStorage.getItem("userId");
+    const token = localStorage.getItem("token");
+
     const [profileData, setProfileData] = useState({
         fullName: 'Diego Vieira Diniz',
         email: 'diegorusty40@gmail.com',
@@ -26,22 +30,40 @@ export default function ConfiguracoesPage() {
         setPasswordData(prev => ({ ...prev, [id]: value }));
     };
 
-    const handleUpdateInfo = (e) => {
+    const handleUpdateInfo = async (e) => {
         e.preventDefault();
-        console.log("Atualizando informações:", profileData);
-        alert('Informações atualizadas com sucesso!');
+        try {
+            await api.put(`/api/users/${userId}`, profileData, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            alert('Informações atualizadas com sucesso!');
+        } catch (err) {
+            console.error(err);
+            alert('❌ Falha ao atualizar informações.');
+        }
     };
 
-    const handleUpdatePassword = (e) => {
+    const handleUpdatePassword = async (e) => {
         e.preventDefault();
         if (passwordData.newPassword !== passwordData.confirmPassword) {
             alert("As novas senhas não coincidem!");
             return;
         }
 
-        console.log("Atualizando senha...");
-        alert('Senha atualizada com sucesso!');
-        setPasswordData({ oldPassword: '', newPassword: '', confirmPassword: '' });
+        try {
+            await api.put(`/api/users/${userId}/password`, {
+                oldPassword: passwordData.oldPassword,
+                newPassword: passwordData.newPassword
+            }, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            alert('Senha atualizada com sucesso!');
+            setPasswordData({ oldPassword: '', newPassword: '', confirmPassword: '' });
+        } catch (err) {
+            console.error(err);
+            alert('❌ Falha ao atualizar senha.');
+        }
     };
 
     return (
@@ -59,42 +81,42 @@ export default function ConfiguracoesPage() {
                 </div>
             </Card>
 
-           
             <div className="config-grid">
+                {/* Atualizar dados */}
                 <Card>
                     <form onSubmit={handleUpdateInfo} className="add-item-form">
                         <h3 className="widget-titulo">Atualizar Informações</h3>
                         <div className="form-group">
                             <label htmlFor="fullName">Nome Completo</label>
-                            <Input id="fullName" name="fullName" type="text" value={profileData.fullName} onChange={handleProfileChange} />
+                            <Input id="fullName" type="text" value={profileData.fullName} onChange={handleProfileChange} />
                         </div>
                         <div className="form-group">
                             <label htmlFor="email">Email</label>
-                            <Input id="email" name="email" type="email" value={profileData.email} onChange={handleProfileChange} />
+                            <Input id="email" type="email" value={profileData.email} onChange={handleProfileChange} />
                         </div>
                         <div className="form-group">
                             <label htmlFor="role">Tipo de Profissional</label>
-                            <Input id="role" name="role" type="text" value={profileData.role} onChange={handleProfileChange} />
+                            <Input id="role" type="text" value={profileData.role} onChange={handleProfileChange} />
                         </div>
                         <Button type="submit">Salvar Informações</Button>
                     </form>
                 </Card>
 
-            
+                {/* Alterar senha */}
                 <Card>
                     <form onSubmit={handleUpdatePassword} className="add-item-form">
                         <h3 className="widget-titulo">Alterar Senha</h3>
                         <div className="form-group">
                             <label htmlFor="oldPassword">Senha Antiga</label>
-                            <Input id="oldPassword" name="oldPassword" type="password" placeholder="••••••••" value={passwordData.oldPassword} onChange={handlePasswordChange} />
+                            <Input id="oldPassword" type="password" value={passwordData.oldPassword} onChange={handlePasswordChange} />
                         </div>
                         <div className="form-group">
                             <label htmlFor="newPassword">Nova Senha</label>
-                            <Input id="newPassword" name="newPassword" type="password" placeholder="••••••••" value={passwordData.newPassword} onChange={handlePasswordChange} />
+                            <Input id="newPassword" type="password" value={passwordData.newPassword} onChange={handlePasswordChange} />
                         </div>
                         <div className="form-group">
                             <label htmlFor="confirmPassword">Confirmar Nova Senha</label>
-                            <Input id="confirmPassword" name="confirmPassword" type="password" placeholder="••••••••" value={passwordData.confirmPassword} onChange={handlePasswordChange} />
+                            <Input id="confirmPassword" type="password" value={passwordData.confirmPassword} onChange={handlePasswordChange} />
                         </div>
                         <Button type="submit">Alterar Senha</Button>
                     </form>

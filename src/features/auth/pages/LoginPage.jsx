@@ -22,28 +22,38 @@ export default function LoginPage() {
                 password: trimmedPassword
             });
 
-            const { token, user, establishmentId, role } = response.data;
-            
-            console.log("Papel do usuário recebido:", role);
+
+            const { token, user, establishmentId } = response.data;
+            console.log("Resposta bruta da API:", response.data);
+
+            const userRoles = user.roles || [];
+
+            const primaryRole = userRoles.length > 0 ? userRoles[0] : null;
+
+            console.log("Objeto user completo recebido:", user);
+            console.log("Papel principal do usuário:", primaryRole);
 
             localStorage.setItem('token', token);
             localStorage.setItem('establishmentId', establishmentId);
             localStorage.setItem('userName', user.name); 
             localStorage.setItem('userId', user.id);
-            localStorage.setItem('userRole', role); 
+            localStorage.setItem('userRoles', JSON.stringify(userRoles));
+            localStorage.setItem('userRole', primaryRole); 
 
             console.log('Login bem-sucedido!');
 
-            if (role === 'ROLE_CUSTOMER') {
+            if (primaryRole === 'ROLE_CUSTOMER') {
                 navigate('/cliente');
-            } else {
+            } else if (primaryRole === 'ROLE_ADMIN' || primaryRole === 'ROLE_PROFESSIONAL') {
                 navigate('/dashboard');
+            } else {
+                navigate('/'); 
             }
+            
+
 
         } catch (err) {
-            const errorMessage = err.response && err.response.data && err.response.data.message 
-                ? err.response.data.message 
-                : 'Erro no login. Verifique suas credenciais.';
+            const errorMessage = err.response?.data?.message || 'Erro no login. Verifique suas credenciais.';
             setError(errorMessage);
             console.error('Erro no login:', err);
         }
