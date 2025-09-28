@@ -2,18 +2,21 @@
   display: grid;
   grid-template-columns: 80px repeat(5, 1fr);
   gap: 1px;
-  background-color: #e0e0e0;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  overflow: hidden;
+  background-color: #e5e7eb;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  max-height: 800px;
+  font-family: "Inter", sans-serif;
 }
 
+/* -------- Colunas/Dias -------- */
 .timeColumn,
 .dayHeader,
 .hourLabel,
 .timeSlot {
-  background-color: white;
-  padding: 10px;
+  background-color: #fff;
   text-align: center;
   display: flex;
   justify-content: center;
@@ -22,45 +25,240 @@
 }
 
 .dayHeader {
-  font-weight: bold;
-  background-color: #f0f0f0;
-  padding: 15px 10px;
-  text-align: center;
+  font-weight: 600;
+  background-color: #f9fafb;
+  padding: 14px 8px;
   line-height: 1.4;
+  border-bottom: 2px solid #e5e7eb;
+  font-size: 0.95rem;
 }
 
 .hourLabel {
-  font-weight: bold;
+  font-weight: 500;
+  font-size: 0.85rem;
   justify-content: flex-end;
-  padding-right: 15px;
-  background-color: #f0f0f0;
+  padding-right: 12px;
+  background-color: #f3f4f6;
+  border-right: 1px solid #e5e7eb;
+  color: #4b5563;
 }
 
 .timeSlot {
-  min-height: 60px;
+  min-height: 70px;
   position: relative;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   justify-content: flex-start;
-  padding: 5px;
+  padding: 4px;
+  border-top: 1px dashed #e5e7eb;
+  transition: background-color 0.2s ease;
+  cursor: pointer;
 }
 
+.timeSlot:hover {
+  background-color: #f9fafb;
+}
+
+/* -------- Agendamentos -------- */
 .appointment {
-  width: calc(100% - 10px);
-  padding: 5px;
-  border-radius: 4px;
-  color: white;
-  font-size: 0.85em;
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 500;
+  line-height: 1.3;
+  margin: 2px 0;
   text-align: left;
-  margin-bottom: 2px;
-  box-sizing: border-box;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
-.blue {
-  background-color: var(--highlight-blue);
+.appointment:hover {
+  transform: scale(1.02);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
 }
 
-.orange {
-  background-color: var(--highlight-orange);
+/* ---------- Cores por Status ---------- */
+.status-pending {
+  background-color: #9ca3af;
+}
+.status-confirmed {
+  background-color: #2563eb;
+}
+.status-canceled {
+  background-color: #dc2626;
+}
+.status-completed {
+  background-color: #059669;
+}
+.status-no_show {
+  background-color: #7c3aed;
+}
+.status-rescheduled {
+  background-color: #facc15;
+  color: #111827;
+}
+.status-rejected {
+  background-color: #ea580c;
+}
+
+/* ---------- Tag no Modal ---------- */
+.statusTag {
+  display: inline-block;
+  padding: 4px 10px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  border-radius: 9999px;
+  text-transform: capitalize;
+  color: #fff;
+}
+
+.statusTag.status-pending { background-color: #9ca3af; }
+.statusTag.status-confirmed { background-color: #2563eb; }
+.statusTag.status-canceled { background-color: #dc2626; }
+.statusTag.status-completed { background-color: #059669; }
+.statusTag.status-no_show { background-color: #7c3aed; }
+.statusTag.status-rescheduled { background-color: #facc15; color: #111827; }
+.statusTag.status-rejected { background-color: #ea580c; }
+
+/* ---------------- Modal ---------------- */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.modal {
+  background: #fff;
+  border-radius: 12px;
+  padding: 22px 26px;
+  max-width: 440px;
+  width: 90%;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+  animation: fadeIn 0.25s ease-in-out;
+}
+
+.modal h3 {
+  margin-top: 0;
+  margin-bottom: 18px;
+  font-size: 1.15rem;
+  color: #2563eb;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.modal p {
+  margin: 6px 0;
+  font-size: 0.92rem;
+  text-align: left;
+  color: #374151;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.modal i {
+  color: #2563eb;
+  min-width: 16px;
+  text-align: center;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 22px;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* ---------- Botões ---------- */
+.btnPrimary {
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btnSecondary {
+  background: #f3f4f6;
+  color: #374151;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btnPrimary:hover {
+  background: #1d4ed8;
+}
+
+.btnSecondary:hover {
+  background: #e5e7eb;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* -------- Responsividade -------- */
+@media (max-width: 768px) {
+  .dayHeader {
+    font-size: 0.8rem;
+    padding: 10px 4px;
+  }
+  .hourLabel {
+    font-size: 0.75rem;
+  }
+  .appointment {
+    font-size: 0.75rem;
+    padding: 6px 8px;
+  }
+
+  .modal {
+    max-width: 95%;
+    padding: 18px;
+  }
+
+  .modalActions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .btnPrimary,
+  .btnSecondary {
+    width: 100%;
+    justify-content: center;
+  }
 }
