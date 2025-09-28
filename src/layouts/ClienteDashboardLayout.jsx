@@ -14,6 +14,7 @@ const SairIcone = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icone"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
 );
 
+
 export default function ClienteDashboardLayout() {
   const [userName, setUserName] = useState('Cliente');
   const navigate = useNavigate();
@@ -41,14 +42,23 @@ export default function ClienteDashboardLayout() {
       <aside className="barra-lateral">
         <div className="logo-app">Organize</div>
         <nav className="menu-lateral">
-          <NavLink to="/cliente" className={({ isActive }) => isActive ? 'link-menu-lateral ativo' : 'link-menu-lateral'}>
+          
+    
+          <NavLink to="/cliente" end className={({ isActive }) => isActive ? 'link-menu-lateral ativo' : 'link-menu-lateral'}>
             <CalendarioIcone />
-            <span>Agendamentos</span>
+            <span>Dashboard</span>
           </NavLink>
+
+          <NavLink to="/cliente/agendar" className={({ isActive }) => isActive ? 'link-menu-lateral ativo' : 'link-menu-lateral'}>
+            <CalendarioIcone />
+            <span>Agendar</span>
+          </NavLink>
+
           <NavLink to="/cliente/configuracoes" className={({ isActive }) => isActive ? 'link-menu-lateral ativo' : 'link-menu-lateral'}>
             <ConfigIcone />
             <span>Configurações</span>
           </NavLink>
+
           <button onClick={handleLogout} className="link-menu-lateral link-sair">
             <SairIcone />
             <span>Sair</span>
