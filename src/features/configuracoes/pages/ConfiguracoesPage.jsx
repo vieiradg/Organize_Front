@@ -1,17 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Card from '../../../components/UI/Card/Card';
 import Input from '../../../components/UI/Input/Input';
 import Button from '../../../components/UI/Button/Button';
 import api from '../../../services/api';
 
 export default function ConfiguracoesPage() {
-    const userId = localStorage.getItem("userId");
-    const token = localStorage.getItem("token");
-
+    
     const [profileData, setProfileData] = useState({
-        fullName: 'Diego Vieira Diniz',
-        email: 'diegorusty40@gmail.com',
-        role: 'Desenvolvedor Fullstack'
+        name: '',
+        email: '',
     });
 
     const [passwordData, setPasswordData] = useState({
@@ -19,6 +16,23 @@ export default function ConfiguracoesPage() {
         newPassword: '',
         confirmPassword: ''
     });
+    
+    const [loading, setLoading] = useState(false);
+    const [notification, setNotification] = useState({ message: '', type: '' });
+
+    useEffect(() => {
+        const fetchProfile = async () => {
+            try {
+                const response = await api.get('/api/me');
+                setProfileData(response.data);
+            } catch (err) {
+                console.error("Falha ao buscar dados do perfil", err);
+                setNotification({ message: 'Não foi possível carregar seus dados.', type: 'error' });
+            }
+        };
+
+        fetchProfile();
+    }, []); 
 
     const handleProfileChange = (e) => {
         const { id, value } = e.target;
@@ -32,38 +46,59 @@ export default function ConfiguracoesPage() {
 
     const handleUpdateInfo = async (e) => {
         e.preventDefault();
+        setLoading(true);
+        setNotification({ message: '', type: '' });
+        
         try {
-            await api.put(`/api/users/${userId}`, profileData, {
-                headers: { Authorization: `Bearer ${token}` }
+            await api.put('/api/me', {
+                name: profileData.name,
+                email: profileData.email
             });
-            alert('Informações atualizadas com sucesso!');
+            setNotification({ message: 'Informações atualizadas com sucesso!', type: 'success' });
         } catch (err) {
             console.error(err);
-            alert('❌ Falha ao atualizar informações.');
+            const errorMessage = err.response?.data?.message || 'Falha ao atualizar informações.';
+            setNotification({ message: errorMessage, type: 'error' });
+        } finally {
+            setLoading(false);
         }
     };
 
     const handleUpdatePassword = async (e) => {
         e.preventDefault();
         if (passwordData.newPassword !== passwordData.confirmPassword) {
-            alert("As novas senhas não coincidem!");
+            setNotification({ message: "As novas senhas não coincidem!", type: 'error' });
             return;
         }
+        setLoading(true);
+        setNotification({ message: '', type: '' });
 
         try {
-            await api.put(`/api/users/${userId}/password`, {
+            await api.put('/api/me/password', {
                 oldPassword: passwordData.oldPassword,
                 newPassword: passwordData.newPassword
-            }, {
-                headers: { Authorization: `Bearer ${token}` }
             });
-
-            alert('Senha atualizada com sucesso!');
+            setNotification({ message: 'Senha atualizada com sucesso!', type: 'success' });
             setPasswordData({ oldPassword: '', newPassword: '', confirmPassword: '' });
         } catch (err) {
             console.error(err);
-            alert('❌ Falha ao atualizar senha.');
+            const errorMessage = err.response?.data?.message || 'Falha ao atualizar senha. Verifique sua senha antiga.';
+            setNotification({ message: errorMessage, type: 'error' });
+        } finally {
+            setLoading(false);
         }
+    };
+
+    const Notification = () => {
+        if (!notification.message) return null;
+        const notificationStyle = {
+            padding: '10px',
+            margin: '10px 0',
+            borderRadius: '5px',
+            color: 'white',
+            backgroundColor: notification.type === 'success' ? '#28a745' : '#dc3545',
+        };
+        return <div style={notificationStyle}>{notification.message}</div>;
     };
 
     return (
@@ -72,43 +107,40 @@ export default function ConfiguracoesPage() {
           
             <Card className="profile-header-card">
                 <div className="profile-header">
-                    <div className="avatar-large">DN</div>
+                    <div className="avatar-large">{profileData.name.charAt(0)}</div>
                     <div>
-                        <h2 className="profile-name">{profileData.fullName}</h2>
+                        <h2 className="profile-name">{profileData.name}</h2>
                         <p className="profile-details">{profileData.email}</p>
-                        <p className="profile-details">{profileData.role}</p>
                     </div>
                 </div>
             </Card>
 
+            <Notification />
+
             <div className="config-grid">
-                {/* Atualizar dados */}
                 <Card>
                     <form onSubmit={handleUpdateInfo} className="add-item-form">
                         <h3 className="widget-titulo">Atualizar Informações</h3>
                         <div className="form-group">
-                            <label htmlFor="fullName">Nome Completo</label>
-                            <Input id="fullName" type="text" value={profileData.fullName} onChange={handleProfileChange} />
+                            <label htmlFor="name">Nome Completo</label>
+                            <Input id="name" type="text" value={profileData.name} onChange={handleProfileChange} />
                         </div>
                         <div className="form-group">
                             <label htmlFor="email">Email</label>
                             <Input id="email" type="email" value={profileData.email} onChange={handleProfileChange} />
                         </div>
-                        <div className="form-group">
-                            <label htmlFor="role">Tipo de Profissional</label>
-                            <Input id="role" type="text" value={profileData.role} onChange={handleProfileChange} />
-                        </div>
-                        <Button type="submit">Salvar Informações</Button>
+                        <Button type="submit" disabled={loading}>
+                            {loading ? 'Salvando...' : 'Salvar Informações'}
+                        </Button>
                     </form>
                 </Card>
 
-                {/* Alterar senha */}
                 <Card>
                     <form onSubmit={handleUpdatePassword} className="add-item-form">
                         <h3 className="widget-titulo">Alterar Senha</h3>
                         <div className="form-group">
-                            <label htmlFor="oldPassword">Senha Antiga</label>
-                            <Input id="oldPassword" type="password" value={passwordData.oldPassword} onChange={handlePasswordChange} />
+                             <label htmlFor="oldPassword">Senha Antiga</label>
+                             <Input id="oldPassword" type="password" value={passwordData.oldPassword} onChange={handlePasswordChange} />
                         </div>
                         <div className="form-group">
                             <label htmlFor="newPassword">Nova Senha</label>
@@ -118,7 +150,9 @@ export default function ConfiguracoesPage() {
                             <label htmlFor="confirmPassword">Confirmar Nova Senha</label>
                             <Input id="confirmPassword" type="password" value={passwordData.confirmPassword} onChange={handlePasswordChange} />
                         </div>
-                        <Button type="submit">Alterar Senha</Button>
+                        <Button type="submit" disabled={loading}>
+                            {loading ? 'Alterando...' : 'Alterar Senha'}
+                        </Button>
                     </form>
                 </Card>
             </div>
