@@ -1,6 +1,21 @@
 import React, { useState, useEffect } from "react";
 import agendaService from "/src/features/agenda/agendaService";
-import styles from "./AppointmentModal.module.css";
+import {
+  Overlay,
+  Modal,
+  Header,
+  Title,
+  CloseButton,
+  Form,
+  FormGroup,
+  Label,
+  Input,
+  Select,
+  TextArea,
+  ErrorMessage,
+  ButtonPrimary,
+} from "./AppointmentModalCliente.styles";
+import { X, CalendarDays, Clock, Scissors, User } from "lucide-react";
 
 const AppointmentModalCliente = ({ isOpen, onClose, onAppointmentCreated }) => {
   const [services, setServices] = useState([]);
@@ -16,7 +31,7 @@ const AppointmentModalCliente = ({ isOpen, onClose, onAppointmentCreated }) => {
   const [error, setError] = useState(null);
 
   const establishmentId = localStorage.getItem("establishmentId");
-  const clientId = localStorage.getItem("clientId"); 
+  const clientId = localStorage.getItem("clientId");
 
   useEffect(() => {
     if (isOpen) {
@@ -57,7 +72,7 @@ const AppointmentModalCliente = ({ isOpen, onClose, onAppointmentCreated }) => {
 
     try {
       if (!selectedServiceId || !selectedEmployeeId || !selectedDate || !selectedHour) {
-        setError("Preencha todos os campos.");
+        setError("Preencha todos os campos obrigatórios.");
         setLoading(false);
         return;
       }
@@ -73,7 +88,7 @@ const AppointmentModalCliente = ({ isOpen, onClose, onAppointmentCreated }) => {
         establishmentId,
         startTime: startTime.toISOString(),
         endTime: endTime.toISOString(),
-        status: "PENDING", 
+        status: "PENDING",
         clientNotes,
       };
 
@@ -82,51 +97,58 @@ const AppointmentModalCliente = ({ isOpen, onClose, onAppointmentCreated }) => {
       onClose();
     } catch (err) {
       console.error("Erro ao criar agendamento:", err);
-      setError(err.response?.data?.message || "Erro ao criar agendamento. Tente novamente.");
+      setError(
+        err.response?.data?.message || "Erro ao criar agendamento. Tente novamente."
+      );
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className={styles["modal-overlay"]}>
-      <div className={styles["modal-content"]}>
-        <div className={styles["modal-header"]}>
-          <h2>Novo Agendamento</h2>
-          <button onClick={onClose} className={styles["close-button"]}>
-            &times;
-          </button>
-        </div>
+    <Overlay onClick={onClose}>
+      <Modal onClick={(e) => e.stopPropagation()}>
+        <Header>
+          <Title>
+            <CalendarDays size={20} /> Novo Agendamento
+          </Title>
+          <CloseButton onClick={onClose}>
+            <X size={18} />
+          </CloseButton>
+        </Header>
 
-        <form onSubmit={handleSubmit}>
-          {error && <p className={styles["error-message"]}>{error}</p>}
+        <Form onSubmit={handleSubmit}>
+          {error && <ErrorMessage>{error}</ErrorMessage>}
 
-          {/* Data */}
-          <div className={styles["form-group"]}>
-            <label>Data:</label>
-            <input
+          <FormGroup>
+            <Label>
+              <CalendarDays size={16} /> Data:
+            </Label>
+            <Input
               type="date"
               value={selectedDate}
               onChange={(e) => setSelectedDate(e.target.value)}
               required
             />
-          </div>
+          </FormGroup>
 
-          {/* Horário */}
-          <div className={styles["form-group"]}>
-            <label>Horário:</label>
-            <input
+          <FormGroup>
+            <Label>
+              <Clock size={16} /> Horário:
+            </Label>
+            <Input
               type="time"
               value={selectedHour}
               onChange={(e) => setSelectedHour(e.target.value)}
               required
             />
-          </div>
+          </FormGroup>
 
-          {/* Serviço */}
-          <div className={styles["form-group"]}>
-            <label>Serviço:</label>
-            <select
+          <FormGroup>
+            <Label>
+              <Scissors size={16} /> Serviço:
+            </Label>
+            <Select
               value={selectedServiceId}
               onChange={(e) => setSelectedServiceId(e.target.value)}
               required
@@ -134,16 +156,17 @@ const AppointmentModalCliente = ({ isOpen, onClose, onAppointmentCreated }) => {
               <option value="">Selecione um serviço</option>
               {services.map((s) => (
                 <option key={s.id} value={s.id}>
-                  {s.name} (R$ {(s.priceCents / 100).toFixed(2)}) - {s.duration} min
+                  {s.name} — R$ {(s.priceCents / 100).toFixed(2)} ({s.duration} min)
                 </option>
               ))}
-            </select>
-          </div>
+            </Select>
+          </FormGroup>
 
-          {/* Funcionário */}
-          <div className={styles["form-group"]}>
-            <label>Profissional:</label>
-            <select
+          <FormGroup>
+            <Label>
+              <User size={16} /> Profissional:
+            </Label>
+            <Select
               value={selectedEmployeeId}
               onChange={(e) => setSelectedEmployeeId(e.target.value)}
               required
@@ -154,25 +177,24 @@ const AppointmentModalCliente = ({ isOpen, onClose, onAppointmentCreated }) => {
                   {emp.name}
                 </option>
               ))}
-            </select>
-          </div>
+            </Select>
+          </FormGroup>
 
-          {/* Notas */}
-          <div className={styles["form-group"]}>
-            <label>Notas:</label>
-            <textarea
+          <FormGroup>
+            <Label>Observações:</Label>
+            <TextArea
               value={clientNotes}
               onChange={(e) => setClientNotes(e.target.value)}
-              placeholder="Observações adicionais"
+              placeholder="Ex: Prefiro atendimento com shampoo neutro"
             />
-          </div>
+          </FormGroup>
 
-          <button type="submit" className={styles["login-button"]} disabled={loading}>
+          <ButtonPrimary type="submit" disabled={loading}>
             {loading ? "Agendando..." : "Agendar"}
-          </button>
-        </form>
-      </div>
-    </div>
+          </ButtonPrimary>
+        </Form>
+      </Modal>
+    </Overlay>
   );
 };
 
