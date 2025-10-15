@@ -16,24 +16,19 @@ export default function ScheduleServicePage() {
   const [message, setMessage] = useState("");
 
   const establishmentId = localStorage.getItem("establishmentId");
-  const token = localStorage.getItem("token"); // token JWT
+  const token = localStorage.getItem("token");
 
-  // carregar equipe e serviços
   useEffect(() => {
     const fetchData = async () => {
       try {
         const [empRes, srvRes] = await Promise.all([
-          api.get(`/api/establishments/${establishmentId}/employees`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          api.get(`/api/establishments/${establishmentId}/services`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
+          api.get(`/api/establishments/${establishmentId}/employees`),
+          api.get(`/api/establishments/${establishmentId}/services`),
         ]);
+
         setEmployees(empRes.data);
         setServices(srvRes.data);
       } catch (err) {
-        console.error("Erro ao carregar dados:", err);
         setMessage("Falha ao carregar profissionais ou serviços.");
       }
     };
@@ -41,13 +36,11 @@ export default function ScheduleServicePage() {
     if (establishmentId && token) fetchData();
   }, [establishmentId, token]);
 
-  // captura inputs
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  // submit
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -68,7 +61,6 @@ export default function ScheduleServicePage() {
       }
 
       const startTimeISO = startDate.toISOString();
-
       const service = services.find((s) => s.id === formData.serviceId);
 
       let endTimeISO = startTimeISO;
@@ -79,22 +71,17 @@ export default function ScheduleServicePage() {
         endTimeISO = endDate.toISOString();
       }
 
-      // 🔑 payload sem customerId (o backend pega do token)
       const payload = {
-        serviceId: formData.serviceId,
-        establishmentId,
-        employeeId: formData.employeeId,
+        serviceId: String(formData.serviceId),
+        establishmentId: String(establishmentId),
+        employeeId: String(formData.employeeId),
         startTime: startTimeISO,
         endTime: endTimeISO,
         status: "PENDING",
         clientNotes: formData.clientNotes,
       };
 
-      console.log("Payload enviado:", payload);
-
-      await api.post(`/api/appointments`, payload, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await api.post(`/api/appointments`, payload);
 
       setMessage("Agendamento realizado com sucesso!");
       setFormData({
@@ -105,8 +92,18 @@ export default function ScheduleServicePage() {
         clientNotes: "",
       });
     } catch (err) {
-      console.error("Erro ao agendar:", err);
-      setMessage("Erro ao realizar o agendamento. Tente novamente.");
+      const backendMsg = err.response?.data?.message;
+      const status = err.response?.status;
+
+      if (backendMsg?.includes("Funcionário já possui agendamento")) {
+        setMessage("Esse horário já está ocupado. Escolha outro.");
+      } else if (status === 401) {
+        setMessage("Sessão expirada. Faça login novamente.");
+      } else if (status === 500) {
+        setMessage("Erro interno no servidor.");
+      } else {
+        setMessage("Erro ao realizar o agendamento. Tente novamente.");
+      }
     } finally {
       setLoading(false);
     }
@@ -115,6 +112,7 @@ export default function ScheduleServicePage() {
   return (
     <div className="schedule-service-container">
       <h1 className="titulo-secao-dashboard">Agendar um Serviço</h1>
+
       <form className="schedule-form" onSubmit={handleSubmit}>
         <div className="form-group">
           <label htmlFor="employee">Profissional</label>

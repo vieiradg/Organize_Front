@@ -1,23 +1,42 @@
 import React, { useEffect, useState } from "react";
-import styles from "./WeeklyCalendar.module.css";
+import {
+  WeeklyCalendarContainer,
+  TimeColumnSpacer,
+  DayHeader,
+  HourLabel,
+  TimeSlot,
+  AppointmentCard,
+  CalendarHeader,
+  NavButton,
+  AppointmentTitle,
+  AppointmentInfo,
+  FilterContainer,
+  SelectFilter,
+} from "./WeeklyCalendar.styles";
 import agendaService from "../agendaService";
 import AppointmentDetailsModal from "../../../components/AppointmentModal/AppointmentDetailsModal";
+import api from "../../../services/api";
 
 const WeeklyCalendar = ({ initialDate = new Date() }) => {
-  const [currentDate] = useState(initialDate);
+  const [currentDate, setCurrentDate] = useState(initialDate);
   const [appointments, setAppointments] = useState([]);
+  const [employees, setEmployees] = useState([]);
+  const [selectedEmployee, setSelectedEmployee] = useState("all");
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const daysOfWeek = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta"];
-  const hours = Array.from({ length: 17 }, (_, i) => i + 6); 
+  const establishmentId = localStorage.getItem("establishmentId");
+  const token = localStorage.getItem("token");
+
+  const daysOfWeek = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+  const hours = Array.from({ length: 17 }, (_, i) => i + 6); // 06h–22h
 
   const startOfWeek = new Date(currentDate);
-  const day = startOfWeek.getDay(); 
-  const diff = startOfWeek.getDate() - day + (day === 0 ? -6 : 1);
+  const day = startOfWeek.getDay();
+  const diff = startOfWeek.getDate() - day;
   startOfWeek.setDate(diff);
 
-  const weekDates = Array.from({ length: 5 }, (_, i) => {
+  const weekDates = Array.from({ length: 7 }, (_, i) => {
     const d = new Date(startOfWeek);
     d.setDate(startOfWeek.getDate() + i);
     return d;
@@ -36,20 +55,22 @@ const WeeklyCalendar = ({ initialDate = new Date() }) => {
       const inHourRange =
         appDate.getHours() >= hour && appDate.getHours() < hour + 1;
 
-      return sameDay && inHourRange;
+      const sameEmployee =
+        selectedEmployee === "all" || app.employeeId === selectedEmployee;
+
+      return sameDay && inHourRange && sameEmployee;
     });
   };
-
 
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
-        let allAppointments = [];
+        let all = [];
         for (const date of weekDates) {
           const data = await agendaService.getAppointmentsByDate(date);
-          allAppointments = [...allAppointments, ...data];
+          all = [...all, ...data];
         }
-        setAppointments(allAppointments);
+        setAppointments(all);
       } catch (error) {
         console.error("Erro ao carregar agendamentos:", error);
       }
@@ -57,11 +78,27 @@ const WeeklyCalendar = ({ initialDate = new Date() }) => {
     fetchAppointments();
   }, [currentDate]);
 
+  useEffect(() => {
+    const fetchEmployees = async () => {
+      try {
+        const res = await api.get(
+          `/api/establishments/${establishmentId}/employees`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        setEmployees(res.data);
+      } catch (error) {
+        console.error("Erro ao carregar funcionários:", error);
+      }
+    };
+    if (establishmentId && token) fetchEmployees();
+  }, [establishmentId, token]);
+
   const updateStatus = async (id, newStatus) => {
     try {
       setLoading(true);
       await agendaService.updateAppointmentStatus(id, newStatus);
-
       setAppointments((prev) =>
         prev.map((a) => (a.id === id ? { ...a, status: newStatus } : a))
       );
@@ -73,12 +110,48 @@ const WeeklyCalendar = ({ initialDate = new Date() }) => {
     }
   };
 
+  const previousWeek = () =>
+    setCurrentDate((prev) => new Date(prev.setDate(prev.getDate() - 7)));
+  const nextWeek = () =>
+    setCurrentDate((prev) => new Date(prev.setDate(prev.getDate() + 7)));
+
   return (
-    <div className={styles.weeklyCalendar}>
-      {/* Cabeçalho dos dias */}
-      <div className={styles.timeColumn}></div>
+    <WeeklyCalendarContainer>
+      <CalendarHeader>
+        <NavButton onClick={previousWeek}>‹</NavButton>
+        <h3>
+          {weekDates[0].toLocaleDateString("pt-BR", {
+            day: "2-digit",
+            month: "short",
+          })}{" "}
+          –{" "}
+          {weekDates[6].toLocaleDateString("pt-BR", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+          })}
+        </h3>
+
+        <FilterContainer>
+          <SelectFilter
+            value={selectedEmployee}
+            onChange={(e) => setSelectedEmployee(e.target.value)}
+          >
+            <option value="all">Todos os profissionais</option>
+            {employees.map((emp) => (
+              <option key={emp.id} value={emp.id}>
+                {emp.name}
+              </option>
+            ))}
+          </SelectFilter>
+        </FilterContainer>
+
+        <NavButton onClick={nextWeek}>›</NavButton>
+      </CalendarHeader>
+
+      <TimeColumnSpacer />
       {weekDates.map((date, index) => (
-        <div key={index} className={styles.dayHeader}>
+        <DayHeader key={index} isWeekend={index === 0 || index === 6}>
           {daysOfWeek[index]} <br />
           <span>
             {date.toLocaleDateString("pt-BR", {
@@ -86,37 +159,41 @@ const WeeklyCalendar = ({ initialDate = new Date() }) => {
               month: "short",
             })}
           </span>
-        </div>
+        </DayHeader>
       ))}
 
-      {/* Grade de horários */}
       {hours.map((hour) => (
         <React.Fragment key={hour}>
-          <div className={styles.hourLabel}>{`${hour}:00h`}</div>
+          <HourLabel>{`${hour}:00h`}</HourLabel>
           {weekDates.map((_, dayIndex) => {
             const slotAppointments = getAppointmentsForSlot(dayIndex, hour);
             return (
-              <div key={`${dayIndex}-${hour}`} className={styles.timeSlot}>
-                {slotAppointments.length > 0 &&
-                  slotAppointments.map((appointment) => (
-                    <div
-                      key={appointment.id}
-                      className={`${styles.appointment} ${
-                        styles[`status-${appointment.status.toLowerCase()}`]
-                      }`}
-                      onClick={() => setSelectedAppointment(appointment)}
-                    >
-                      <i className="fas fa-user"></i>{" "}
-                      {appointment.clientName || "Cliente"}
-                    </div>
-                  ))}
-              </div>
+              <TimeSlot key={`${dayIndex}-${hour}`}>
+                {slotAppointments.map((appointment) => (
+                  <AppointmentCard
+                    key={appointment.id}
+                    $status={appointment.status?.toLowerCase()}
+                    onClick={() => setSelectedAppointment(appointment)}
+                  >
+                    <AppointmentTitle>
+                      {appointment.serviceName || "Serviço não informado"}
+                    </AppointmentTitle>
+                    <AppointmentInfo>
+                      🕒{" "}
+                      {new Date(appointment.startTime).toLocaleTimeString(
+                        "pt-BR",
+                        { hour: "2-digit", minute: "2-digit" }
+                      )}{" "}
+                      — {appointment.clientName || "Cliente"}
+                    </AppointmentInfo>
+                  </AppointmentCard>
+                ))}
+              </TimeSlot>
             );
           })}
         </React.Fragment>
       ))}
 
-      {/* Modal de Detalhes */}
       {selectedAppointment && (
         <AppointmentDetailsModal
           appointment={selectedAppointment}
@@ -125,7 +202,7 @@ const WeeklyCalendar = ({ initialDate = new Date() }) => {
           loading={loading}
         />
       )}
-    </div>
+    </WeeklyCalendarContainer>
   );
 };
 

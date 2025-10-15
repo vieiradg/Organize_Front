@@ -1,14 +1,37 @@
 import React, { useState, useEffect } from "react";
-import "../UI/Modal/Modal.module.css";
-import api from "@services/api.js";
+import api from "@services/api";
+import {
+  Overlay,
+  Modal,
+  Header,
+  Title,
+  CloseButton,
+  Form,
+  FormGroup,
+  Label,
+  Input,
+  Select,
+  TextArea,
+  ErrorMessage,
+  ButtonPrimary,
+} from "./AppointmentModal.styles";
+import {
+  CalendarPlus,
+  Clock,
+  User,
+  Briefcase,
+  FileText,
+  Flag,
+  UserCog,
+  X,
+} from "lucide-react";
 
 const AppointmentModal = ({ isOpen, onClose, selectedHour, onAppointmentCreated }) => {
   const [customers, setCustomers] = useState([]);
   const [services, setServices] = useState([]);
   const [employees, setEmployees] = useState([]);
+
   const [selectedCustomerId, setSelectedCustomerId] = useState("");
-  const [newCustomerName, setNewCustomerName] = useState("");
-  const [newCustomerPhone, setNewCustomerPhone] = useState("");
   const [selectedServiceId, setSelectedServiceId] = useState("");
   const [selectedEmployeeId, setSelectedEmployeeId] = useState("");
   const [clientNotes, setClientNotes] = useState("");
@@ -23,7 +46,7 @@ const AppointmentModal = ({ isOpen, onClose, selectedHour, onAppointmentCreated 
     if (isOpen && establishmentId && token) {
       const fetchData = async () => {
         try {
-          const [customersResponse, servicesResponse, employeesResponse] = await Promise.all([
+          const [customersRes, servicesRes, employeesRes] = await Promise.all([
             api.get(`/api/establishments/${establishmentId}/clients`, {
               headers: { Authorization: `Bearer ${token}` },
             }),
@@ -34,12 +57,19 @@ const AppointmentModal = ({ isOpen, onClose, selectedHour, onAppointmentCreated 
               headers: { Authorization: `Bearer ${token}` },
             }),
           ]);
-          setCustomers(customersResponse.data);
-          setServices(servicesResponse.data);
-          setEmployees(employeesResponse.data);
+
+          // Normaliza para sempre ter name, independente de como o backend envia
+          const normalizedClients = customersRes.data.map((c) => ({
+            id: c.id,
+            name: c.clientName || c.name || "Cliente sem nome",
+          }));
+
+          setCustomers(normalizedClients);
+          setServices(servicesRes.data || []);
+          setEmployees(employeesRes.data || []);
         } catch (err) {
           console.error("Erro ao buscar dados:", err);
-          setError("Erro ao carregar dados (clientes/serviços/funcionários).");
+          setError("Erro ao carregar dados (clientes, serviços ou funcionários).");
         }
       };
       fetchData();
@@ -48,55 +78,29 @@ const AppointmentModal = ({ isOpen, onClose, selectedHour, onAppointmentCreated 
 
   if (!isOpen) return null;
 
-  const handleCreateCustomer = async () => {
-    try {
-      const response = await api.post(
-        `/api/establishments/${establishmentId}/clients`,
-        {
-          name: newCustomerName,
-          phone: newCustomerPhone,
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      setCustomers([...customers, response.data]);
-      setSelectedCustomerId(response.data.id);
-      setNewCustomerName("");
-      setNewCustomerPhone("");
-      return response.data.id;
-    } catch (err) {
-      console.error("Erro ao criar cliente:", err);
-      setError("Erro ao criar novo cliente.");
-      throw err;
-    }
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
 
-    let finalCustomerId = selectedCustomerId;
-
     try {
-      if (selectedCustomerId === "new" && newCustomerName) {
-        finalCustomerId = await handleCreateCustomer();
-      } else if (!selectedCustomerId) {
-        setError("Selecione um cliente ou crie um novo.");
+      if (!selectedCustomerId || !selectedServiceId || !selectedEmployeeId) {
+        setError("Preencha todos os campos obrigatórios.");
         setLoading(false);
         return;
       }
 
       const startTime = new Date();
       startTime.setHours(selectedHour, 0, 0, 0);
+
       const service = services.find((s) => s.id === selectedServiceId);
       const duration = service?.durationMinutes || 60;
+
       const endTime = new Date(startTime);
       endTime.setMinutes(startTime.getMinutes() + duration);
 
       const appointmentData = {
-        customerId: finalCustomerId,
+        customerId: selectedCustomerId,
         serviceId: selectedServiceId,
         establishmentId,
         employeeId: selectedEmployeeId,
@@ -109,6 +113,7 @@ const AppointmentModal = ({ isOpen, onClose, selectedHour, onAppointmentCreated 
       await api.post("/api/appointments", appointmentData, {
         headers: { Authorization: `Bearer ${token}` },
       });
+
       onAppointmentCreated();
       onClose();
     } catch (err) {
@@ -120,115 +125,86 @@ const AppointmentModal = ({ isOpen, onClose, selectedHour, onAppointmentCreated 
   };
 
   return (
-    <div className="modal-overlay">
-      <div className="modal-content">
-        <div className="modal-header">
-          <h2>
-            <i className="fas fa-calendar-plus"></i> Novo Agendamento
-          </h2>
-          <button onClick={onClose} className="close-button">
-            &times;
-          </button>
-        </div>
+    <Overlay onClick={onClose}>
+      <Modal onClick={(e) => e.stopPropagation()}>
+        <Header>
+          <Title>
+            <CalendarPlus size={20} /> Novo Agendamento
+          </Title>
+          <CloseButton onClick={onClose}>
+            <X size={18} />
+          </CloseButton>
+        </Header>
 
-        <form onSubmit={handleSubmit}>
-          {error && <p className="error-message">{error}</p>}
+        <Form onSubmit={handleSubmit}>
+          {error && <ErrorMessage>{error}</ErrorMessage>}
 
-          <div className="form-group">
-            <label>
-              <i className="fas fa-clock"></i> Horário:
-            </label>
-            <input type="text" value={`${selectedHour}:00`} readOnly />
-          </div>
+          <FormGroup>
+            <Label>
+              <Clock size={16} /> Horário:
+            </Label>
+            <Input type="text" value={`${selectedHour}:00`} readOnly />
+          </FormGroup>
 
-          <div className="form-group">
-            <label>
-              <i className="fas fa-user"></i> Cliente:
-            </label>
-            <select
+          <FormGroup>
+            <Label>
+              <User size={16} /> Cliente:
+            </Label>
+            <Select
               value={selectedCustomerId}
               onChange={(e) => setSelectedCustomerId(e.target.value)}
               required
             >
               <option value="">Selecione um cliente</option>
-              {customers.map((customer) => (
-                <option key={customer.id} value={customer.id}>
-                  {customer.clientName || customer.name} ({customer.clientPhone || customer.phone})
+              {customers.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
                 </option>
               ))}
-              <option value="new">Criar novo cliente</option>
-            </select>
-          </div>
+            </Select>
+          </FormGroup>
 
-          {selectedCustomerId === "new" && (
-            <>
-              <div className="form-group">
-                <label>
-                  <i className="fas fa-user-plus"></i> Nome do Novo Cliente:
-                </label>
-                <input
-                  type="text"
-                  placeholder="Nome do novo cliente"
-                  value={newCustomerName}
-                  onChange={(e) => setNewCustomerName(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label>
-                  <i className="fas fa-phone"></i> Telefone do Novo Cliente:
-                </label>
-                <input
-                  type="text"
-                  placeholder="Telefone do novo cliente"
-                  value={newCustomerPhone}
-                  onChange={(e) => setNewCustomerPhone(e.target.value)}
-                />
-              </div>
-            </>
-          )}
-
-          <div className="form-group">
-            <label>
-              <i className="fas fa-briefcase"></i> Serviço:
-            </label>
-            <select
+          <FormGroup>
+            <Label>
+              <Briefcase size={16} /> Serviço:
+            </Label>
+            <Select
               value={selectedServiceId}
               onChange={(e) => setSelectedServiceId(e.target.value)}
               required
             >
               <option value="">Selecione um serviço</option>
-              {services.map((service) => (
-                <option key={service.id} value={service.id}>
-                  {service.name} (R$ {(service.priceCents / 100).toFixed(2)}) - {service.durationMinutes} min
+              {services.map((s) => (
+                <option key={s.id} value={s.id}>
+                  {s.name} — R$ {(s.priceCents / 100).toFixed(2)} ({s.durationMinutes} min)
                 </option>
               ))}
-            </select>
-          </div>
+            </Select>
+          </FormGroup>
 
-          <div className="form-group">
-            <label>
-              <i className="fas fa-user-tie"></i> Funcionário:
-            </label>
-            <select
+          <FormGroup>
+            <Label>
+              <UserCog size={16} /> Funcionário:
+            </Label>
+            <Select
               value={selectedEmployeeId}
               onChange={(e) => setSelectedEmployeeId(e.target.value)}
               required
             >
               <option value="">Selecione um funcionário</option>
-              {employees.map((employee) => (
-                <option key={employee.id} value={employee.id}>
-                  {employee.name}
+              {employees.map((emp) => (
+                <option key={emp.id} value={emp.id}>
+                  {emp.name}
                 </option>
               ))}
-            </select>
-          </div>
+            </Select>
+          </FormGroup>
 
-          <div className="form-group">
-            <label>
-              <i className="fas fa-flag"></i> Status do Agendamento:
-            </label>
-            <select value={status} onChange={(e) => setStatus(e.target.value)}>
+          <FormGroup>
+            <Label>
+              <Flag size={16} /> Status:
+            </Label>
+            <Select value={status} onChange={(e) => setStatus(e.target.value)}>
               <option value="PENDING">Pendente</option>
               <option value="CONFIRMED">Confirmado</option>
               <option value="CANCELED">Cancelado</option>
@@ -236,26 +212,26 @@ const AppointmentModal = ({ isOpen, onClose, selectedHour, onAppointmentCreated 
               <option value="NO_SHOW">Não Compareceu</option>
               <option value="RESCHEDULED">Reagendado</option>
               <option value="REJECTED">Rejeitado</option>
-            </select>
-          </div>
+            </Select>
+          </FormGroup>
 
-          <div className="form-group">
-            <label>
-              <i className="fas fa-sticky-note"></i> Notas do Cliente:
-            </label>
-            <textarea
-              placeholder="Notas do cliente"
+          <FormGroup>
+            <Label>
+              <FileText size={16} /> Notas:
+            </Label>
+            <TextArea
+              placeholder="Observações sobre o cliente ou serviço"
               value={clientNotes}
               onChange={(e) => setClientNotes(e.target.value)}
             />
-          </div>
+          </FormGroup>
 
-          <button type="submit" className="login-button" disabled={loading}>
+          <ButtonPrimary type="submit" disabled={loading}>
             {loading ? "Salvando..." : "Salvar Agendamento"}
-          </button>
-        </form>
-      </div>
-    </div>
+          </ButtonPrimary>
+        </Form>
+      </Modal>
+    </Overlay>
   );
 };
 
