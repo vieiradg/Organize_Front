@@ -1,4 +1,3 @@
-// src/components/AppointmentModal/AppointmentDetailsModal.jsx
 import React from "react";
 import {
   Overlay,
