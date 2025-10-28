@@ -2,23 +2,25 @@ import api from '../../services/api'; // Garanta que o caminho para seu 'api.js'
 
 const getDashboardData = async () => {
     try {
-        // Pega o token de autenticação do localStorage
+        // ✅ NOVO: Pega o adminId e o token
+        const adminId = localStorage.getItem('userId');
         const token = localStorage.getItem('token');
-        if (!token) {
-            throw new Error('Token de autenticação não encontrado.');
+        
+        if (!token || !adminId) {
+            throw new Error('Dados de autenticação (Token ou ID do Admin) incompletos.');
         }
 
-        // Faz a chamada para o endpoint do dashboard, enviando o token
+        // Faz a chamada, enviando o Token e o adminId no cabeçalho
         const response = await api.get('/api/dashboard', {
             headers: {
-                Authorization: `Bearer ${token}`,
+                'adminId': adminId, // ⬅️ CAMPO REQUERIDO PELO BACKEND!
+                'Authorization': `Bearer ${token}`,
             },
         });
 
         return response.data;
     } catch (error) {
         console.error('Erro ao buscar dados do dashboard:', error);
-        // Lança o erro para que o componente que chamou possa tratá-lo
         throw error;
     }
 };

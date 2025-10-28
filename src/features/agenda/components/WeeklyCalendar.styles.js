@@ -1,31 +1,37 @@
 import styled from "styled-components";
 
+const mobileBreakpoint = '768px'; 
+
 export const WeeklyCalendarContainer = styled.div`
   display: grid;
-  grid-template-columns: 80px repeat(7, 1fr); /* Domingo a sábado */
+  /* 1 coluna de hora (80px) + 7 colunas de dia (largura mínima para scroll) */
+  grid-template-columns: 80px repeat(7, minmax(130px, 1fr));
   gap: 1px;
   background-color: #e5e7eb;
   border: 1px solid #d1d5db;
   border-radius: 12px;
   overflow-y: auto;
-  overflow-x: auto;
+  overflow-x: auto; /* Permite o scroll horizontal */
   max-height: 800px;
   font-family: "Inter", sans-serif;
-
-  /* 🔹 Evita que as colunas fiquem esmagadas em telas menores */
-  min-width: 1100px;
+  width: 100%;
 `;
 
-/* ===================== CABEÇALHO ===================== */
 
 export const CalendarHeader = styled.div`
-  grid-column: span 8; /* 1 (horas) + 7 dias */
+  grid-column: 1 / -1; /* Cobre todas as 8 colunas */
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 14px 22px;
   background: #f9fafb;
   border-bottom: 1px solid #e5e7eb;
+
+  @media (max-width: ${mobileBreakpoint}) {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 10px 16px;
+  }
 
   h3 {
     font-weight: 600;
@@ -38,11 +44,15 @@ export const CalendarHeader = styled.div`
   }
 `;
 
-/* 🔹 Grupo central (setas + título) */
 export const NavGroup = styled.div`
   display: flex;
   align-items: center;
   gap: 10px;
+  @media (max-width: ${mobileBreakpoint}) {
+    width: 100%;
+    justify-content: space-between;
+    margin-bottom: 5px; 
+  }
 `;
 
 export const NavButton = styled.button`
@@ -66,7 +76,6 @@ export const NavButton = styled.button`
   }
 `;
 
-/* ===================== CABEÇALHO DOS DIAS ===================== */
 
 export const TimeColumnSpacer = styled.div`
   background: #fff;
@@ -81,7 +90,13 @@ export const DayHeader = styled.div`
   border-bottom: 2px solid #e5e7eb;
   font-size: 0.95rem;
   color: #1f2937;
-  min-width: 140px;
+  min-width: 130px; 
+  
+  @media (max-width: ${mobileBreakpoint}) {
+    padding: 10px 4px;
+    font-size: 0.85rem;
+    min-width: 110px; /* Reduzido para caber mais */
+  }
 
   span {
     display: block;
@@ -91,7 +106,6 @@ export const DayHeader = styled.div`
   }
 `;
 
-/* ===================== HORÁRIOS ===================== */
 
 export const HourLabel = styled.div`
   background-color: #f3f4f6;
@@ -104,6 +118,13 @@ export const HourLabel = styled.div`
   border-right: 1px solid #e5e7eb;
   color: #4b5563;
   min-height: 70px;
+  
+  @media (max-width: ${mobileBreakpoint}) {
+    min-width: 50px;
+    font-size: 0.75rem;
+    padding-right: 6px;
+    justify-content: center;
+  }
 `;
 
 export const TimeSlot = styled.div`
@@ -115,13 +136,18 @@ export const TimeSlot = styled.div`
   border-top: 1px dashed #e5e7eb;
   cursor: pointer;
   transition: background-color 0.15s ease;
+  min-width: 130px; 
 
   &:hover {
     background-color: #f9fafb;
   }
+  
+  @media (max-width: ${mobileBreakpoint}) {
+    min-height: 55px; 
+    min-width: 110px;
+  }
 `;
 
-/* ===================== AGENDAMENTOS ===================== */
 
 const statusBg = {
   pending: "#9ca3af",
@@ -135,6 +161,7 @@ const statusBg = {
 
 export const AppointmentCard = styled.div`
   width: 100%;
+  box-sizing: border-box;
   padding: 8px 10px;
   border-radius: 10px;
   color: ${({ $status }) => ($status === "rescheduled" ? "#111827" : "#fff")};
@@ -145,24 +172,43 @@ export const AppointmentCard = styled.div`
   display: flex;
   flex-direction: column;
   gap: 4px;
+  cursor: pointer;
+  
+  @media (max-width: ${mobileBreakpoint}) {
+    font-size: 0.75rem;
+    padding: 5px 8px;
+    gap: 2px;
+  }
 `;
 
 export const AppointmentTitle = styled.div`
   font-weight: 600;
   font-size: 0.9rem;
+  
+  @media (max-width: ${mobileBreakpoint}) {
+    font-size: 0.8rem;
+  }
 `;
 
 export const AppointmentInfo = styled.div`
   font-weight: 400;
   font-size: 0.8rem;
   opacity: 0.9;
+  
+  @media (max-width: ${mobileBreakpoint}) {
+    font-size: 0.7rem;
+  }
 `;
 
-/* ===================== FILTRO ===================== */
 
 export const FilterContainer = styled.div`
   margin-left: auto;
   margin-right: 12px;
+  
+  @media (max-width: ${mobileBreakpoint}) {
+    margin: 10px 0 0 0;
+    width: 100%;
+  }
 `;
 
 export const SelectFilter = styled.select`
@@ -179,5 +225,10 @@ export const SelectFilter = styled.select`
   &:focus {
     border-color: #2563eb;
     box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.3);
+  }
+  
+  @media (max-width: ${mobileBreakpoint}) {
+    width: 100%;
+    box-sizing: border-box;
   }
 `;

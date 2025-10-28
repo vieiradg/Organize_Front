@@ -1,17 +1,17 @@
 .weeklyCalendar {
   display: grid;
-  grid-template-columns: 80px repeat(5, 1fr);
+  grid-template-columns: 80px repeat(5, 1fr); 
   gap: 1px;
   background-color: #e5e7eb;
   border: 1px solid #d1d5db;
   border-radius: 10px;
   overflow-y: auto;
-  overflow-x: hidden;
+  overflow-x: hidden; 
   max-height: 800px;
   font-family: "Inter", sans-serif;
+  width: 100%;
 }
 
-/* -------- Colunas/Dias -------- */
 .timeColumn,
 .dayHeader,
 .hourLabel,
@@ -31,6 +31,7 @@
   line-height: 1.4;
   border-bottom: 2px solid #e5e7eb;
   font-size: 0.95rem;
+  white-space: nowrap; 
 }
 
 .hourLabel {
@@ -54,13 +55,13 @@
   border-top: 1px dashed #e5e7eb;
   transition: background-color 0.2s ease;
   cursor: pointer;
+  min-width: 140px; 
 }
 
 .timeSlot:hover {
   background-color: #f9fafb;
 }
 
-/* -------- Agendamentos -------- */
 .appointment {
   width: 100%;
   padding: 8px 10px;
@@ -83,31 +84,14 @@
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
 }
 
-/* ---------- Cores por Status ---------- */
-.status-pending {
-  background-color: #9ca3af;
-}
-.status-confirmed {
-  background-color: #2563eb;
-}
-.status-canceled {
-  background-color: #dc2626;
-}
-.status-completed {
-  background-color: #059669;
-}
-.status-no_show {
-  background-color: #7c3aed;
-}
-.status-rescheduled {
-  background-color: #facc15;
-  color: #111827;
-}
-.status-rejected {
-  background-color: #ea580c;
-}
+.status-pending { background-color: #9ca3af; }
+.status-confirmed { background-color: #2563eb; }
+.status-canceled { background-color: #dc2626; }
+.status-completed { background-color: #059669; }
+.status-no_show { background-color: #7c3aed; }
+.status-rescheduled { background-color: #facc15; color: #111827; }
+.status-rejected { background-color: #ea580c; }
 
-/* ---------- Tag no Modal ---------- */
 .statusTag {
   display: inline-block;
   padding: 4px 10px;
@@ -184,7 +168,6 @@
   flex-wrap: wrap;
 }
 
-/* ---------- Botões ---------- */
 .btnPrimary {
   background: #2563eb;
   color: #fff;
@@ -232,31 +215,45 @@
   }
 }
 
-/* -------- Responsividade -------- */
+
 @media (max-width: 768px) {
-  .dayHeader {
-    font-size: 0.8rem;
-    padding: 10px 4px;
-  }
-  .hourLabel {
-    font-size: 0.75rem;
-  }
-  .appointment {
-    font-size: 0.75rem;
-    padding: 6px 8px;
-  }
+    .weeklyCalendar {
+        grid-template-columns: 50px repeat(5, 120px); 
+        overflow-x: auto; 
+    }
 
-  .modal {
-    max-width: 95%;
-    padding: 18px;
-  }
+    .dayHeader {
+        font-size: 0.75rem;
+        padding: 10px 4px;
+        white-space: nowrap; 
+    }
+    
+    .hourLabel {
+        font-size: 0.7rem;
+        padding-right: 4px;
+    }
 
-  .modalActions {
-    flex-direction: column;
-    align-items: stretch;
-  }
+    .timeSlot {
+        min-height: 50px; 
+        padding: 4px;
+        min-width: 120px; 
+    }
+    .appointment {
+        font-size: 0.65rem; 
+        padding: 6px 8px; 
+    }
 
-  .btnPrimary,
+    .modal {
+        max-width: 95%;
+        padding: 18px;
+    }
+
+    .modalActions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .btnPrimary,
   .btnSecondary {
     width: 100%;
     justify-content: center;

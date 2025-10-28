@@ -11,8 +11,11 @@ export default function DashboardPage() {
   const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(true);
 
+
   useEffect(() => {
     const fetchData = async () => {
+      if (!dashboardService) return setLoading(false); 
+      
       try {
         const data = await dashboardService.getDashboardData();
         setDashboardData(data);
@@ -47,11 +50,6 @@ export default function DashboardPage() {
           <p className="widget-titulo">Agendamentos Hoje</p>
           <h2 className="widget-valor">{dashboardData.appointmentsToday}</h2>
           <p className="widget-subtexto">{dashboardData.confirmedAppointmentsToday} agendamentos confirmados</p>
-        </div>
-        <div className="widget-card">
-          <p className="widget-titulo">Próximo Agendamento</p>
-          <h2 className="widget-valor">{dashboardData.nextAppointmentTime}</h2>
-          <p className="widget-subtexto">{dashboardData.nextAppointmentDescription}</p>
         </div>
         <div className="widget-card">
           <p className="widget-titulo">Novos Clientes</p>
