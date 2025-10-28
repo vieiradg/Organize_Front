@@ -15,30 +15,34 @@ export default function FinanceiroPage() {
   const adminId = localStorage.getItem("userId");
   const token = localStorage.getItem("token");
 
-  const calcularCrescimento = (atual, anterior) => {
-    if (anterior === 0 || anterior === undefined) return "N/A";
-    const percentual = ((atual - anterior) / anterior) * 100;
-    return `${percentual > 0 ? "+" : ""}${percentual.toFixed(0)}%`;
-  };
-
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
         const [financeRes, transRes] = await Promise.all([
-          api.get("/api/dashboard/finance", { headers: { adminId, Authorization: `Bearer ${token}` } }),
-          api.get("/api/admin/transactions", { headers: { adminId, Authorization: `Bearer ${token}` } }),
+          api.get("/api/dashboard/finance", {
+            headers: { adminId, Authorization: `Bearer ${token}` },
+          }),
+          api.get("/api/admin/transactions", {
+            headers: { adminId, Authorization: `Bearer ${token}` },
+          }),
         ]);
 
         const initialTransactions = transRes.data;
         setData(financeRes.data);
 
-        const clientNamePromises = initialTransactions.map(transaction => {
+        const clientNamePromises = initialTransactions.map((transaction) => {
           if (transaction.appointment_id) {
-            return api.get(`/api/appointments/${transaction.appointment_id}`, { headers: { Authorization: `Bearer ${token}` } })
-              .then(response => response.data.clientName)
-              .catch(error => {
-                console.error(`Falha ao buscar agendamento ${transaction.appointment_id}:`, error);
+            return api
+              .get(`/api/appointments/${transaction.appointment_id}`, {
+                headers: { Authorization: `Bearer ${token}` },
+              })
+              .then((response) => response.data.clientName)
+              .catch((error) => {
+                console.error(
+                  `Falha ao buscar agendamento ${transaction.appointment_id}:`,
+                  error
+                );
                 return "Cliente não encontrado";
               });
           }
@@ -47,13 +51,14 @@ export default function FinanceiroPage() {
 
         const clientNames = await Promise.all(clientNamePromises);
 
-        const enrichedTransactions = initialTransactions.map((transaction, index) => ({
-          ...transaction,
-          clientName: clientNames[index],
-        }));
+        const enrichedTransactions = initialTransactions.map(
+          (transaction, index) => ({
+            ...transaction,
+            clientName: clientNames[index],
+          })
+        );
 
         setTransactions(enrichedTransactions);
-
       } catch (err) {
         console.error("❌ Erro ao buscar dados financeiros:", err);
         setError("Erro ao carregar dados financeiros.");
@@ -68,7 +73,7 @@ export default function FinanceiroPage() {
     try {
       const headers = {
         adminId: adminId,
-        Authorization: `Bearer ${token}`, 
+        Authorization: `Bearer ${token}`,
       };
 
       if (transaction.id) {
@@ -104,14 +109,21 @@ export default function FinanceiroPage() {
             R$ {(data.monthlyRevenue / 100).toFixed(2).replace(".", ",")}
           </WidgetValue>
           <WidgetSub>
-            {calcularCrescimento(data.revenueGrowthPercent, 100)} em relação ao mês anterior
+            {data.revenueGrowthPercent == 0 ? (
+              <p> </p>
+            ) : (
+              <p>{data.revenueGrowthPercent} em relação ao mês anterior</p>
+            )}
           </WidgetSub>
         </WidgetCard>
 
         <WidgetCard>
           <WidgetTitle>Despesas do Mês</WidgetTitle>
           <WidgetValue>
-            R$ {(Math.abs(data.monthlyExpenses) / 100).toFixed(2).replace(".", ",")}
+            R${" "}
+            {(Math.abs(data.monthlyExpenses) / 100)
+              .toFixed(2)
+              .replace(".", ",")}
           </WidgetValue>
           <WidgetSub>Materiais e despesas operacionais</WidgetSub>
         </WidgetCard>
@@ -122,20 +134,34 @@ export default function FinanceiroPage() {
             R$ {(data.monthlyProfit / 100).toFixed(2).replace(".", ",")}
           </WidgetValue>
           <WidgetSub>
-            {calcularCrescimento(data.profitGrowthPercent, 100)} em relação ao mês anterior
+            {data.profitGrowthPercent == 0 ? (
+              <p> </p>
+            ) : (
+              <p>{data.profitGrowthPercent} em relação ao mês anterior</p>
+            )}
           </WidgetSub>
         </WidgetCard>
 
         <WidgetCard>
           <WidgetTitle>Média por Agendamento</WidgetTitle>
           <WidgetValue>
-            R$ {(data.averageRevenuePerAppointment / 100).toFixed(2).replace(".", ",")}
+            R${" "}
+            {(data.averageRevenuePerAppointment / 100)
+              .toFixed(2)
+              .replace(".", ",")}
           </WidgetValue>
-          <WidgetSub>Baseado em {data.totalAppointments} agendamentos</WidgetSub>
+          <WidgetSub>
+            Baseado em {data.totalAppointments} agendamentos
+          </WidgetSub>
         </WidgetCard>
       </WidgetGrid>
 
-      <AddButton onClick={() => { setSelectedTransaction(null); setModalOpen(true); }}>
+      <AddButton
+        onClick={() => {
+          setSelectedTransaction(null);
+          setModalOpen(true);
+        }}
+      >
         + Nova Transação
       </AddButton>
 
