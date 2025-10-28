@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react"; // ✅ SINTAXE CORRIGIDA
 import api from "../../../services/api";
 import "./ScheduleServicePage.css";
 
@@ -18,23 +18,34 @@ export default function ScheduleServicePage() {
   const establishmentId = localStorage.getItem("establishmentId");
   const token = localStorage.getItem("token");
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [empRes, srvRes] = await Promise.all([
-          api.get(`/api/establishments/${establishmentId}/employees`),
-          api.get(`/api/establishments/${establishmentId}/services`),
-        ]);
+  // Encapsulamento da lógica de busca para usar useCallback e garantir a estabilidade
+  const fetchData = useCallback(async () => {
+    if (!establishmentId || !token) return;
 
-        setEmployees(empRes.data);
-        setServices(srvRes.data);
-      } catch (err) {
-        setMessage("Falha ao carregar profissionais ou serviços.");
-      }
-    };
+    try {
+      // Configuração do cabeçalho de autenticação para as chamadas GET
+      const config = {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      };
 
-    if (establishmentId && token) fetchData();
+      const [empRes, srvRes] = await Promise.all([
+        api.get(`/api/establishments/${establishmentId}/employees`, config),
+        api.get(`/api/establishments/${establishmentId}/services`, config),
+      ]);
+
+      setEmployees(empRes.data);
+      setServices(srvRes.data);
+    } catch (err) {
+      setMessage("Falha ao carregar profissionais ou serviços.");
+      console.error("Erro ao buscar dados iniciais:", err);
+    }
   }, [establishmentId, token]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]); // Dependência correta para useCallback
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -45,6 +56,13 @@ export default function ScheduleServicePage() {
     e.preventDefault();
     setLoading(true);
     setMessage("");
+
+    // ✅ CORREÇÃO 1: Configuração do cabeçalho de autenticação (JWT) para o POST
+    const config = {
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    };
 
     try {
       if (!formData.date || !formData.time) {
@@ -81,7 +99,8 @@ export default function ScheduleServicePage() {
         clientNotes: formData.clientNotes,
       };
 
-      await api.post(`/api/appointments`, payload);
+      // ✅ CORREÇÃO 2: Envia a requisição POST com o cabeçalho 'config'
+      await api.post(`/api/appointments`, payload, config); 
 
       setMessage("Agendamento realizado com sucesso!");
       setFormData({
@@ -92,10 +111,12 @@ export default function ScheduleServicePage() {
         clientNotes: "",
       });
     } catch (err) {
-      const backendMsg = err.response?.data?.message;
       const status = err.response?.status;
 
-      if (backendMsg?.includes("Funcionário já possui agendamento")) {
+      if (status === 403) {
+         // Erro 403 por falta de permissão, mesmo com token (backend precisa conferir o Role)
+         setMessage("Você não tem permissão para agendar. Verifique sua conta."); 
+      } else if (err.response?.data?.message?.includes("Funcionário já possui agendamento")) {
         setMessage("Esse horário já está ocupado. Escolha outro.");
       } else if (status === 401) {
         setMessage("Sessão expirada. Faça login novamente.");

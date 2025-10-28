@@ -11,12 +11,19 @@ export default function DashboardPage() {
   const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // ✅ CORREÇÃO: Removido o adminId e token daqui, pois o service faz isso.
+
   useEffect(() => {
     const fetchData = async () => {
+      // Verifica se o serviço está pronto para ser chamado
+      if (!dashboardService) return setLoading(false); 
+      
       try {
+        // ✅ CHAMADA SIMPLIFICADA: O serviço agora cuida de pegar o ID e Token
         const data = await dashboardService.getDashboardData();
         setDashboardData(data);
       } catch (error) {
+        // O erro 403 agora será capturado aqui, e o console logará o AxiosError
         console.error('Não foi possível carregar os dados do Dashboard', error);
       } finally {
         setLoading(false);
@@ -24,7 +31,7 @@ export default function DashboardPage() {
     };
 
     fetchData();
-  }, []);
+  }, []); // ✅ Dependências vazias, pois a lógica de auth está no service
 
   if (loading) {
     return <div>Carregando...</div>;

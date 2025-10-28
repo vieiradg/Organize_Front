@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import styled from "styled-components";
 import api from "../../../services/api";
 import TransactionsTable from "../../../components/Financial/TransactionsTable";
@@ -13,65 +13,58 @@ export default function FinanceiroPage() {
   const [selectedTransaction, setSelectedTransaction] = useState(null);
 
   const adminId = localStorage.getItem("userId");
-  // ADIÇÃO 1: Pegamos o token de autenticação, igual é feito no AppointmentModal.
   const token = localStorage.getItem("token");
 
-  const calcularCrescimento = (atual, anterior) => {
-    if (anterior === 0 || anterior === undefined) return "N/A";
-    const percentual = ((atual - anterior) / anterior) * 100;
+  // Função para formatar o percentual que já vem do backend (ex: 15.7 para +16%).
+  const formatarCrescimento = (percentual) => {
+    if (percentual === undefined || percentual === null) return "N/A";
     return `${percentual > 0 ? "+" : ""}${percentual.toFixed(0)}%`;
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        // MUDANÇA 2: Adicionamos o token nas chamadas GET também por segurança.
-        const [financeRes, transRes] = await Promise.all([
-          api.get("/api/dashboard/finance", { headers: { adminId, Authorization: `Bearer ${token}` } }),
-          api.get("/api/admin/transactions", { headers: { adminId, Authorization: `Bearer ${token}` } }),
-        ]);
+  // Lógica de busca de dados encapsulada para ser reutilizada (melhor UX).
+  const fetchData = useCallback(async () => {
+    if (!adminId || !token) {
+      setError("Usuário não autenticado.");
+      setLoading(false);
+      return;
+    }
 
-        const initialTransactions = transRes.data;
-        setData(financeRes.data);
+    try {
+      setLoading(true);
+      setError(null);
 
-        const clientNamePromises = initialTransactions.map(transaction => {
-          if (transaction.appointment_id) {
-            return api.get(`/api/appointments/${transaction.appointment_id}`, { headers: { Authorization: `Bearer ${token}` } })
-              .then(response => response.data.clientName)
-              .catch(error => {
-                console.error(`Falha ao buscar agendamento ${transaction.appointment_id}:`, error);
-                return "Cliente não encontrado";
-              });
-          }
-          return Promise.resolve("Transação Manual");
-        });
+      // ✅ CHAMADAS OTIMIZADAS:
+      // 1. Usa a URL resolvida no DashboardController.
+      // 2. Remove as múltiplas chamadas individuais para buscar o nome do cliente (assumindo que o backend faz isso agora).
+      const [financeRes, transRes] = await Promise.all([
+        api.get("/api/dashboard/finance", { headers: { adminId, Authorization: `Bearer ${token}` } }),
+        api.get("/api/admin/transactions", { headers: { adminId, Authorization: `Bearer ${token}` } }),
+      ]);
 
-        const clientNames = await Promise.all(clientNamePromises);
+      setData(financeRes.data);
+      // Os dados de transação já vêm prontos, sem necessidade de enriquecimento no frontend.
+      setTransactions(transRes.data);
 
-        const enrichedTransactions = initialTransactions.map((transaction, index) => ({
-          ...transaction,
-          clientName: clientNames[index],
-        }));
-
-        setTransactions(enrichedTransactions);
-
-      } catch (err) {
-        console.error("❌ Erro ao buscar dados financeiros:", err);
-        setError("Erro ao carregar dados financeiros.");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
+    } catch (err) {
+      console.error("❌ Erro ao buscar dados financeiros:", err);
+      setError("Erro ao carregar dados financeiros. Verifique o console para detalhes.");
+    } finally {
+      setLoading(false);
+    }
   }, [adminId, token]);
 
-  // MUDANÇA 3: Lógica de salvar e editar unificada e corrigida.
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+
+  // Lógica para salvar/editar a transação.
   const handleSaveTransaction = async (transaction) => {
     try {
       const headers = {
         adminId: adminId,
-        Authorization: `Bearer ${token}`, // Enviamos o token aqui!
+        Authorization: `Bearer ${token}`,
       };
 
       if (transaction.id) {
@@ -86,13 +79,16 @@ export default function FinanceiroPage() {
         await api.post("/api/admin/transactions", transaction, { headers });
       }
 
-      window.location.reload();
       setModalOpen(false);
+      // ✅ MELHORIA UX: Chama fetchData() para atualizar a lista sem recarregar a página.
+      fetchData(); 
+
     } catch (err) {
       console.error("Erro ao salvar transação:", err);
       alert("Não foi possível salvar a transação.");
     }
   };
+
 
   if (loading) return <p>Carregando dados financeiros...</p>;
   if (error) return <p>{error}</p>;
@@ -109,7 +105,8 @@ export default function FinanceiroPage() {
             R$ {(data.monthlyRevenue / 100).toFixed(2).replace(".", ",")}
           </WidgetValue>
           <WidgetSub>
-            {calcularCrescimento(data.revenueGrowthPercent, 100)} em relação ao mês anterior
+            {/* Usa a função de formatação simples */}
+            {formatarCrescimento(data.revenueGrowthPercent)} em relação ao mês anterior
           </WidgetSub>
         </WidgetCard>
 
@@ -127,7 +124,8 @@ export default function FinanceiroPage() {
             R$ {(data.monthlyProfit / 100).toFixed(2).replace(".", ",")}
           </WidgetValue>
           <WidgetSub>
-            {calcularCrescimento(data.profitGrowthPercent, 100)} em relação ao mês anterior
+            {/* Usa a função de formatação simples */}
+            {formatarCrescimento(data.profitGrowthPercent)} em relação ao mês anterior
           </WidgetSub>
         </WidgetCard>
 
