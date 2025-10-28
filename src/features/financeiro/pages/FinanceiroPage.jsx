@@ -15,13 +15,13 @@ export default function FinanceiroPage() {
   const adminId = localStorage.getItem("userId");
   const token = localStorage.getItem("token");
 
-  // Função para formatar o percentual que já vem do backend (ex: 15.7 para +16%).
+  // Função para formatar o percentual de crescimento
   const formatarCrescimento = (percentual) => {
     if (percentual === undefined || percentual === null) return "N/A";
     return `${percentual > 0 ? "+" : ""}${percentual.toFixed(0)}%`;
   };
 
-  // Lógica de busca de dados encapsulada para ser reutilizada (melhor UX).
+  // Lógica de busca de dados encapsulada para ser reutilizada (melhor UX e performance).
   const fetchData = useCallback(async () => {
     if (!adminId || !token) {
       setError("Usuário não autenticado.");
@@ -33,9 +33,7 @@ export default function FinanceiroPage() {
       setLoading(true);
       setError(null);
 
-      // ✅ CHAMADAS OTIMIZADAS:
-      // 1. Usa a URL resolvida no DashboardController.
-      // 2. Remove as múltiplas chamadas individuais para buscar o nome do cliente (assumindo que o backend faz isso agora).
+      // Chamadas otimizadas: a URL /api/dashboard/finance deve estar correta no Backend.
       const [financeRes, transRes] = await Promise.all([
         api.get("/api/dashboard/finance", { headers: { adminId, Authorization: `Bearer ${token}` } }),
         api.get("/api/admin/transactions", { headers: { adminId, Authorization: `Bearer ${token}` } }),
@@ -80,7 +78,7 @@ export default function FinanceiroPage() {
       }
 
       setModalOpen(false);
-      // ✅ MELHORIA UX: Chama fetchData() para atualizar a lista sem recarregar a página.
+      // MELHORIA UX: Chama fetchData() para atualizar a lista sem recarregar a página.
       fetchData(); 
 
     } catch (err) {
@@ -105,7 +103,6 @@ export default function FinanceiroPage() {
             R$ {(data.monthlyRevenue / 100).toFixed(2).replace(".", ",")}
           </WidgetValue>
           <WidgetSub>
-            {/* Usa a função de formatação simples */}
             {formatarCrescimento(data.revenueGrowthPercent)} em relação ao mês anterior
           </WidgetSub>
         </WidgetCard>
@@ -124,7 +121,6 @@ export default function FinanceiroPage() {
             R$ {(data.monthlyProfit / 100).toFixed(2).replace(".", ",")}
           </WidgetValue>
           <WidgetSub>
-            {/* Usa a função de formatação simples */}
             {formatarCrescimento(data.profitGrowthPercent)} em relação ao mês anterior
           </WidgetSub>
         </WidgetCard>
@@ -160,7 +156,6 @@ export default function FinanceiroPage() {
   );
 }
 
-/* Styled Components (seu código de estilos permanece o mesmo) */
 const Container = styled.div`
   padding: 1.5rem;
 `;
@@ -202,7 +197,7 @@ const WidgetSub = styled.p`
 `;
 
 const AddButton = styled.button`
-  background: #1e90ff;
+  background: #ea580c;
   color: #fff;
   padding: 0.6rem 1.2rem;
   border: none;
@@ -211,6 +206,6 @@ const AddButton = styled.button`
   cursor: pointer;
   transition: 0.3s;
   &:hover {
-    background: #187bcd;
+    background: #ea8148ff;
   }
 `;
