@@ -9,11 +9,28 @@ export default function UpcomingAppointmentsPage() {
 
   useEffect(() => {
     const fetchDashboard = async () => {
+      const userId = localStorage.getItem('userId'); 
+      const token = localStorage.getItem('token');
+      
+      if (!token || !userId) {
+        setErro('Usuário não autenticado. Faça login.');
+        setLoading(false);
+        return;
+      }
+      
+      const config = {
+          headers: {
+              'adminId': userId, 
+              'Authorization': `Bearer ${token}` 
+          }
+      };
+
       try {
-        const response = await api.get('/api/dashboard');
+        setLoading(true);
+        const response = await api.get('/api/dashboard', config); 
         setDashboardData(response.data);
       } catch (err) {
-        console.error(err);
+        console.error("Erro ao carregar dashboard do cliente:", err);
         setErro('Erro ao carregar seus agendamentos.');
       } finally {
         setLoading(false);
@@ -27,7 +44,7 @@ export default function UpcomingAppointmentsPage() {
   if (!dashboardData) return <p>Você ainda não possui agendamentos.</p>;
 
   const { nextAppointmentTime, nextAppointmentDescription, appointmentsToday, upcomingAppointments } = dashboardData;
-
+  
   return (
     <div className="dashboard-cliente-container">
       <h1 className="titulo-secao-dashboard">Dashboard</h1>
@@ -37,20 +54,20 @@ export default function UpcomingAppointmentsPage() {
         <div className="card-resumo">
           <span className="card-resumo-titulo">Próximo Agendamento</span>
           <span className="card-resumo-dado-principal">{nextAppointmentTime || '-'}</span>
-          <span className="card-resumo-descricao">{nextAppointmentDescription}</span>
+          <span className="card-resumo-descricao">{nextAppointmentDescription || 'Nenhum agendamento futuro'}</span>
         </div>
 
         {/* Total */}
         <div className="card-resumo">
           <span className="card-resumo-titulo">Total de Agendamentos</span>
-          <span className="card-resumo-dado-principal">{appointmentsToday || 0}</span>
+          <span className="card-resumo-dado-principal">{appointmentsToday || 0}</span> 
           <span className="card-resumo-descricao">Desde que você entrou</span>
         </div>
       </div>
 
       {/* Histórico */}
       <div className="historico-container">
-        <h2 className="historico-titulo">Histórico de Agendamentos</h2>
+        <h2 className="historico-titulo">Próximos Agendamentos</h2>
         <div className="historico-lista">
           {upcomingAppointments && upcomingAppointments.length > 0 ? (
             upcomingAppointments.map((item) => (
@@ -65,7 +82,7 @@ export default function UpcomingAppointmentsPage() {
               </div>
             ))
           ) : (
-            <p>Você ainda não possui histórico de agendamentos.</p>
+            <p>Você não tem agendamentos futuros.</p>
           )}
         </div>
       </div>

@@ -1,4 +1,5 @@
 import styled from "styled-components";
+const mobileBreakpoint = '768px';
 
 export const DailyContainer = styled.div`
   display: flex;
@@ -9,6 +10,7 @@ export const DailyContainer = styled.div`
   font-family: "Inter", sans-serif;
   overflow-y: auto;
   max-height: 88vh;
+  width: 100%; /* Garantir que ocupe a largura total */
 `;
 
 export const Header = styled.div`
@@ -44,6 +46,12 @@ export const DateLabel = styled.h3`
   display: flex;
   align-items: center;
   gap: 10px;
+  text-align: center; /* Centraliza em telas pequenas */
+  
+  /* Ajuste do tamanho da fonte em telas menores */
+  @media (max-width: ${mobileBreakpoint}) {
+    font-size: 1rem;
+  }
 
   .today-btn {
     border: none;
@@ -72,6 +80,11 @@ export const HourRow = styled.div`
   &:nth-child(even) {
     background-color: #f9fafb;
   }
+
+  @media (max-width: ${mobileBreakpoint}) {
+    padding: 8px 10px;
+    gap: 10px;
+  }
 `;
 
 export const HourLabel = styled.div`
@@ -81,6 +94,11 @@ export const HourLabel = styled.div`
   font-weight: 600;
   font-size: 0.9rem;
   padding-top: 8px;
+
+  @media (max-width: ${mobileBreakpoint}) {
+    flex: 0 0 55px; /* Reduz a largura para economizar espaço */
+    font-size: 0.8rem;
+  }
 `;
 
 export const Slot = styled.div`
@@ -88,6 +106,8 @@ export const Slot = styled.div`
   display: flex;
   flex-direction: column;
   gap: 6px;
+  /* Garante que o slot ocupe o espaço restante */
+  min-width: 0; 
 `;
 
 const statusColors = {
@@ -101,6 +121,9 @@ const statusColors = {
 };
 
 export const AppointmentCard = styled.div`
+  width: 100%;
+  box-sizing: border-box; 
+  
   background: #fff;
   border-left: 4px solid ${({ $status }) => statusColors[$status] || "#9ca3af"};
   border-radius: 10px;
@@ -111,6 +134,12 @@ export const AppointmentCard = styled.div`
   display: flex;
   flex-direction: column;
   gap: 4px;
+  cursor: pointer; /* Adicionado cursor pointer para indicar que é clicável */
+  
+  @media (max-width: ${mobileBreakpoint}) {
+    padding: 8px 10px;
+    font-size: 0.85rem;
+  }
 `;
 
 export const ServiceName = styled.div`
@@ -119,6 +148,9 @@ export const ServiceName = styled.div`
   gap: 6px;
   font-weight: 600;
   color: #1f2937;
+  white-space: nowrap; 
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
 export const ClientName = styled.div`
@@ -163,4 +195,4 @@ export const StatusTag = styled.span`
     $status === "rescheduled" ? "#111827" : "#fff"};
   background-color: ${({ $status }) =>
     statusColors[$status] || "#9ca3af"};
-`;
+`;  

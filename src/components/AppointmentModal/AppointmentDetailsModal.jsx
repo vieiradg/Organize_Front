@@ -15,7 +15,7 @@ import {
   CalendarDays,
   User,
   Scissors,
-  Clock,
+  Clock, 
   Briefcase,
   X,
   Check,
@@ -24,7 +24,8 @@ import {
   Flag,
 } from "lucide-react";
 
-const AppointmentDetailsModal = ({ appointment, onClose, onUpdateStatus, loading }) => {
+
+const AppointmentDetailsModal = ({ appointment, onClose, onUpdateStatus, loading, onReschedule }) => {
   if (!appointment) return null;
 
   const formatTime = (iso) =>
@@ -91,6 +92,13 @@ const AppointmentDetailsModal = ({ appointment, onClose, onUpdateStatus, loading
         <Actions>
           <ButtonSecondary onClick={onClose}>
             <X size={16} /> Fechar
+          </ButtonSecondary>
+          
+          <ButtonSecondary
+            disabled={loading || appointment.status === "COMPLETED" || appointment.status === "CANCELED"}
+            onClick={() => onReschedule(appointment)} 
+          >
+            <Clock size={16} /> Reagendar
           </ButtonSecondary>
 
           {/* Cancelar */}
