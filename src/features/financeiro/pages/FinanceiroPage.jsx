@@ -13,7 +13,6 @@ export default function FinanceiroPage() {
   const [selectedTransaction, setSelectedTransaction] = useState(null);
 
   const adminId = localStorage.getItem("userId");
-  // ADIÇÃO 1: Pegamos o token de autenticação, igual é feito no AppointmentModal.
   const token = localStorage.getItem("token");
 
   const calcularCrescimento = (atual, anterior) => {
@@ -26,7 +25,6 @@ export default function FinanceiroPage() {
     const fetchData = async () => {
       try {
         setLoading(true);
-        // MUDANÇA 2: Adicionamos o token nas chamadas GET também por segurança.
         const [financeRes, transRes] = await Promise.all([
           api.get("/api/dashboard/finance", { headers: { adminId, Authorization: `Bearer ${token}` } }),
           api.get("/api/admin/transactions", { headers: { adminId, Authorization: `Bearer ${token}` } }),
@@ -66,23 +64,20 @@ export default function FinanceiroPage() {
     fetchData();
   }, [adminId, token]);
 
-  // MUDANÇA 3: Lógica de salvar e editar unificada e corrigida.
   const handleSaveTransaction = async (transaction) => {
     try {
       const headers = {
         adminId: adminId,
-        Authorization: `Bearer ${token}`, // Enviamos o token aqui!
+        Authorization: `Bearer ${token}`, 
       };
 
       if (transaction.id) {
-        // Lógica para editar o status
         await api.patch(
           `/api/admin/transactions/${transaction.id}/status`,
           { status: transaction.status },
           { headers }
         );
       } else {
-        // Lógica para criar uma nova transação manual
         await api.post("/api/admin/transactions", transaction, { headers });
       }
 
@@ -162,7 +157,6 @@ export default function FinanceiroPage() {
   );
 }
 
-/* Styled Components (seu código de estilos permanece o mesmo) */
 const Container = styled.div`
   padding: 1.5rem;
 `;
@@ -204,7 +198,7 @@ const WidgetSub = styled.p`
 `;
 
 const AddButton = styled.button`
-  background: #1e90ff;
+  background: #ea580c;
   color: #fff;
   padding: 0.6rem 1.2rem;
   border: none;
@@ -213,6 +207,6 @@ const AddButton = styled.button`
   cursor: pointer;
   transition: 0.3s;
   &:hover {
-    background: #187bcd;
+    background: #ea8148ff;
   }
 `;
