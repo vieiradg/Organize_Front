@@ -1,10 +1,10 @@
-# Documentação do Frontend: organize-frontend
+# Organize Frontend - Visão Geral
 
-Este documento detalha a arquitetura, tecnologias, dependências e instruções para rodar o projeto `organize-frontend`.
+O banco de dados do projeto Organize foi projetado para oferecer uma estrutura relacional clara e escalável, permitindo o gerenciamento eficiente de usuários, estabelecimentos, serviços, agendamentos, pagamentos e relatórios.
+O objetivo é garantir integridade referencial e flexibilidade para futuras expansões, como módulos de notificações, lista de espera e feedbacks.
 
-## 1. Visão Geral
-
-O `organize-frontend` é a interface do usuário da aplicação Organize, construída com React e Vite. Ele oferece uma experiência interativa para o gerenciamento de tarefas, consumindo a API RESTful fornecida pelo `organize-backend`.
+A modelagem utiliza UUIDs como chaves primárias, assegurando unicidade e compatibilidade em ambientes distribuídos.
+Todas as tabelas incluem campos de auditoria, como created_at, para rastrear o momento da criação dos registros.
 
 ## 2. Tecnologias e Dependências Principais
 
@@ -26,23 +26,31 @@ A estrutura do projeto segue o padrão de aplicações React/Vite:
 
 ```
 .
-├── public/             # Arquivos estáticos (imagens, favicon, etc.)
-├── src/                # Código-fonte da aplicação
-│   ├── assets/         # Ativos como imagens, ícones, etc.
-│   ├── components/     # Componentes React reutilizáveis
-│   ├── pages/          # Páginas da aplicação (views)
-│   ├── services/       # Serviços para interação com a API
-│   ├── App.jsx         # Componente principal da aplicação
-│   ├── main.jsx        # Ponto de entrada da aplicação
-│   └── index.css       # Estilos globais
-├── .env.development    # Variáveis de ambiente para desenvolvimento
-├── .gitignore          # Arquivos e pastas a serem ignorados pelo Git
-├── eslint.config.js    # Configuração do ESLint
-├── index.html          # Arquivo HTML principal
-├── package.json        # Metadados do projeto e lista de dependências
-├── package-lock.json   # Bloqueio de versões das dependências
-├── README.md           # Informações gerais do projeto
-└── vite.config.js      # Configuração do Vite
+.
+├── public/                     # Arquivos estáticos (favicon, imagens públicas, etc.)
+├── src/                        # Código-fonte principal da aplicação
+│   ├── components/             # Componentes React reutilizáveis (botões, inputs, cards, etc.)
+│   ├── features/               # Funcionalidades específicas (ex: login, cadastro, agendamento)
+│   ├── hooks/                  # Hooks personalizados (ex: useAuth, useFetch)
+│   ├── layouts/                # Estruturas de layout compartilhadas (ex: layout do painel)
+│   ├── routes/                 # Definição e controle das rotas da aplicação
+│   ├── services/               # Comunicação com a API (axios, endpoints, etc.)
+│   ├── styles/                 # Estilos globais e temas
+│   ├── App.jsx                 # Componente principal da aplicação
+│   ├── main.jsx                # Ponto de entrada da aplicação React
+│   ├── index.js                # Inicialização e renderização do app
+│   └── index.css               # Estilos globais padrão
+│
+├── .env.development            # Variáveis de ambiente para o ambiente de desenvolvimento
+├── .gitignore                  # Arquivos e pastas ignorados pelo Git
+├── .gitattributes              # Configurações adicionais de versionamento
+├── eslint.config.js            # Regras e padrões do ESLint
+├── index.html                  # Template HTML principal
+├── package.json                # Dependências e scripts do projeto
+├── package-lock.json           # Controle de versões exatas das dependências
+├── LICENSE                     # Licença do projeto
+├── README.md                   # Documentação do projeto (este arquivo)
+└── vite.config.js              # Configuração do Vite
 ```
 
 ## 4. Scripts Disponíveis
