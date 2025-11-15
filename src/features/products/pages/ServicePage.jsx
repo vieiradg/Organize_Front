@@ -7,34 +7,14 @@ import Input from "../../../components/UI/Input/Input";
 import Modal from "../../../components/UI/Modal/Modal";
 
 const EditarIcone = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="18"
-    height="18"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
+  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
     <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
   </svg>
 );
 
 const DeletarIcone = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="18"
-    height="18"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
+  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <polyline points="3 6 5 6 21 6" />
     <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
     <line x1="10" y1="11" x2="10" y2="17" />
@@ -49,7 +29,7 @@ export default function ServicePage() {
   const [selectedService, setSelectedService] = useState(null);
   const [formData, setFormData] = useState({
     name: "",
-    duration: "",
+    durationMinutes: "",
     priceCents: "",
   });
   const [loading, setLoading] = useState(false);
@@ -69,20 +49,18 @@ export default function ServicePage() {
     if (selectedService) {
       setFormData({
         name: selectedService.name || "",
-        duration: selectedService.duration || "",
+        durationMinutes: selectedService.durationMinutes || "",
         priceCents: selectedService.priceCents
           ? (selectedService.priceCents / 100).toFixed(2)
           : "",
       });
     } else {
-      setFormData({ name: "", duration: "", priceCents: "" });
+      setFormData({ name: "", durationMinutes: "", priceCents: "" });
     }
   }, [selectedService]);
 
   const fetchServices = async (id) => {
-    if (!id) return;
     setLoading(true);
-    setError(null);
     try {
       const response = await api.get(`/api/establishments/${id}/services`);
       setServices(response.data);
@@ -101,19 +79,14 @@ export default function ServicePage() {
   const handleSave = async (e) => {
     e.preventDefault();
 
-    if (!establishmentId) {
-      setError("ID do estabelecimento não encontrado. Não é possível salvar.");
-      return;
-    }
-
     const serviceData = {
       name: formData.name,
       description: "",
       priceCents: Math.round(
         parseFloat(formData.priceCents.replace(",", ".")) * 100
       ),
-      duration: parseInt(formData.duration),
-      establishmentId: establishmentId,
+      durationMinutes: parseInt(formData.durationMinutes),
+      establishmentId,
     };
 
     try {
@@ -136,15 +109,9 @@ export default function ServicePage() {
   };
 
   const handleDelete = async (id) => {
-    if (!establishmentId) {
-      setError("ID do estabelecimento não encontrado. Não é possível excluir.");
-      return;
-    }
     if (window.confirm("Tem certeza que deseja apagar este serviço?")) {
       try {
-        await api.delete(
-          `/api/establishments/${establishmentId}/services/${id}`
-        );
+        await api.delete(`/api/establishments/${establishmentId}/services/${id}`);
         fetchServices(establishmentId);
       } catch (err) {
         setError("Não foi possível apagar o serviço.");
@@ -156,22 +123,19 @@ export default function ServicePage() {
     setSelectedService(service);
     if (service) {
       setFormData({
-        name: service.name || "",
-        duration: service.duration || "",
-        priceCents: service.priceCents
-          ? (service.priceCents / 100).toFixed(2)
-          : "",
+        name: service.name,
+        durationMinutes: service.durationMinutes,
+        priceCents: (service.priceCents / 100).toFixed(2),
       });
     } else {
-      setFormData({ name: "", duration: "", priceCents: "" });
+      setFormData({ name: "", durationMinutes: "", priceCents: "" });
     }
     setShowModal(true);
   };
 
   const closeModal = () => {
-    setShowModal(false);
     setSelectedService(null);
-    setFormData({ name: "", duration: "", priceCents: "" });
+    setShowModal(false);
   };
 
   return (
@@ -184,6 +148,7 @@ export default function ServicePage() {
       <Card>
         <h3 className="widget-titulo">Serviços Oferecidos</h3>
         {error && <p className="error-message">{error}</p>}
+
         <div className="table-container">
           <table className="dashboard-table">
             <thead>
@@ -196,38 +161,27 @@ export default function ServicePage() {
             </thead>
             <tbody>
               {loading ? (
-                <tr>
-                  <td colSpan="4">A carregar...</td>
-                </tr>
+                <tr><td colSpan="4">Carregando...</td></tr>
               ) : services.length > 0 ? (
                 services.map((service) => (
                   <tr key={service.id}>
                     <td>{service.name}</td>
-                    <td>{service.duration} min</td>
+                    <td>{service.durationMinutes} min</td>
                     <td>
-                      R${" "}
-                      {(service.priceCents / 100).toFixed(2).replace(".", ",")}
+                      R$ {(service.priceCents / 100).toFixed(2).replace(".", ",")}
                     </td>
                     <td className="actions-cell">
-                      <button
-                        onClick={() => openModal(service)}
-                        className="action-button icon-button"
-                      >
+                      <button className="action-button" onClick={() => openModal(service)}>
                         <EditarIcone />
                       </button>
-                      <button
-                        onClick={() => handleDelete(service.id)}
-                        className="action-button icon-button delete"
-                      >
+                      <button className="action-button delete" onClick={() => handleDelete(service.id)}>
                         <DeletarIcone />
                       </button>
                     </td>
                   </tr>
                 ))
               ) : (
-                <tr>
-                  <td colSpan="4">Nenhum serviço cadastrado ainda.</td>
-                </tr>
+                <tr><td colSpan="4">Nenhum serviço cadastrado ainda.</td></tr>
               )}
             </tbody>
           </table>
@@ -238,53 +192,51 @@ export default function ServicePage() {
         <Modal onClose={closeModal}>
           <h2>{selectedService ? "Editar Serviço" : "Adicionar Serviço"}</h2>
           <form onSubmit={handleSave} className="add-item-form">
+
             <div className="form-row">
               <div className="form-group">
-                <label htmlFor="name">Nome</label>
+                <label>Nome</label>
                 <Input
-                  id="name"
                   name="name"
-                  type="text"
-                  placeholder="Nome do Serviço"
                   value={formData.name}
                   onChange={handleInputChange}
                   required
                 />
               </div>
+
               <div className="form-group">
-                <label htmlFor="duration">Duração (min)</label>
+                <label>Duração (min)</label>
                 <Input
-                  id="duration"
-                  name="duration"
+                  name="durationMinutes"
                   type="number"
-                  placeholder="60"
-                  value={formData.duration}
+                  value={formData.durationMinutes}
                   onChange={handleInputChange}
                   required
                 />
               </div>
             </div>
+
             <div className="form-row">
               <div className="form-group">
-                <label htmlFor="priceCents">Preço (R$)</label>
+                <label>Preço (R$)</label>
                 <Input
-                  id="priceCents"
                   name="priceCents"
                   type="number"
                   step="0.01"
-                  placeholder="150.00"
                   value={formData.priceCents}
                   onChange={handleInputChange}
                   required
                 />
               </div>
             </div>
+
             <div className="modal-actions">
-              <Button onClick={closeModal} type="secondary">
+              <Button type="secondary" onClick={closeModal}>
                 Cancelar
               </Button>
               <Button type="submit">Salvar</Button>
             </div>
+
           </form>
         </Modal>
       )}
