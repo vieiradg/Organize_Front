@@ -19,6 +19,7 @@ export default function FinanceiroPage() {
     const fetchData = async () => {
       try {
         setLoading(true);
+
         const [financeRes, transRes] = await Promise.all([
           api.get("/api/dashboard/finance", {
             headers: { adminId, Authorization: `Bearer ${token}` },
@@ -28,51 +29,23 @@ export default function FinanceiroPage() {
           }),
         ]);
 
-        const initialTransactions = transRes.data;
         setData(financeRes.data);
+        setTransactions(transRes.data);
 
-        const clientNamePromises = initialTransactions.map((transaction) => {
-          if (transaction.appointment_id) {
-            return api
-              .get(`/api/appointments/${transaction.appointment_id}`, {
-                headers: { Authorization: `Bearer ${token}` },
-              })
-              .then((response) => response.data.clientName)
-              .catch((error) => {
-                console.error(
-                  `Falha ao buscar agendamento ${transaction.appointment_id}:`,
-                  error
-                );
-                return "Cliente não encontrado";
-              });
-          }
-          return Promise.resolve("Transação Manual");
-        });
-
-        const clientNames = await Promise.all(clientNamePromises);
-
-        const enrichedTransactions = initialTransactions.map(
-          (transaction, index) => ({
-            ...transaction,
-            clientName: clientNames[index],
-          })
-        );
-
-        setTransactions(enrichedTransactions);
       } catch (err) {
-        console.error("❌ Erro ao buscar dados financeiros:", err);
         setError("Erro ao carregar dados financeiros.");
       } finally {
         setLoading(false);
       }
     };
+
     fetchData();
   }, [adminId, token]);
 
   const handleSaveTransaction = async (transaction) => {
     try {
       const headers = {
-        adminId: adminId,
+        adminId,
         Authorization: `Bearer ${token}`,
       };
 
@@ -88,8 +61,7 @@ export default function FinanceiroPage() {
 
       window.location.reload();
       setModalOpen(false);
-    } catch (err) {
-      console.error("Erro ao salvar transação:", err);
+    } catch {
       alert("Não foi possível salvar a transação.");
     }
   };
@@ -109,19 +81,15 @@ export default function FinanceiroPage() {
             R$ {(data.monthlyRevenue / 100).toFixed(2).replace(".", ",")}
           </WidgetValue>
           <WidgetSub>
-            {data.revenueGrowthPercent == 0 ? (
-              <p> </p>
-            ) : (
-              <p>{data.revenueGrowthPercent} em relação ao mês anterior</p>
-            )}
+            {data.revenueGrowthPercent !== 0 &&
+              `${data.revenueGrowthPercent}% em relação ao mês anterior`}
           </WidgetSub>
         </WidgetCard>
 
         <WidgetCard>
           <WidgetTitle>Despesas do Mês</WidgetTitle>
           <WidgetValue>
-            R${" "}
-            {(Math.abs(data.monthlyExpenses) / 100)
+            R$ {(Math.abs(data.monthlyExpenses) / 100)
               .toFixed(2)
               .replace(".", ",")}
           </WidgetValue>
@@ -134,19 +102,15 @@ export default function FinanceiroPage() {
             R$ {(data.monthlyProfit / 100).toFixed(2).replace(".", ",")}
           </WidgetValue>
           <WidgetSub>
-            {data.profitGrowthPercent == 0 ? (
-              <p> </p>
-            ) : (
-              <p>{data.profitGrowthPercent} em relação ao mês anterior</p>
-            )}
+            {data.profitGrowthPercent !== 0 &&
+              `${data.profitGrowthPercent}% em relação ao mês anterior`}
           </WidgetSub>
         </WidgetCard>
 
         <WidgetCard>
           <WidgetTitle>Média por Agendamento</WidgetTitle>
           <WidgetValue>
-            R${" "}
-            {(data.averageRevenuePerAppointment / 100)
+            R$ {(data.averageRevenuePerAppointment / 100)
               .toFixed(2)
               .replace(".", ",")}
           </WidgetValue>
@@ -182,6 +146,8 @@ export default function FinanceiroPage() {
     </Container>
   );
 }
+
+/* ------- ESTILOS ------- */
 
 const Container = styled.div`
   padding: 1.5rem;
@@ -232,6 +198,7 @@ const AddButton = styled.button`
   margin-top: 1.5rem;
   cursor: pointer;
   transition: 0.3s;
+
   &:hover {
     background: #ea8148ff;
   }

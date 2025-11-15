@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../../services/api.js";
+
 import {
   Button,
   Card,
@@ -20,68 +21,83 @@ import {
   ModalTitle,
   Subtitle,
   Title,
+  ErrorMsg,
+  SuccessMsg
 } from "./establishment.style.js";
 
 export default function EstablishmentPage() {
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
   const [phone, setPhone] = useState("");
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
+
   const [establishment, setEstablishment] = useState(null);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalInfo, setModalInfo] = useState({ title: "", message: "" });
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    const storedEstablishmentId = localStorage.getItem("establishmentId");
-    if (storedEstablishmentId) {
-      fetchEstablishment(storedEstablishmentId);
+    const storedId = localStorage.getItem("establishmentId");
+
+    if (storedId && storedId !== "null" && storedId !== "undefined") {
+      fetchEstablishment(storedId);
     }
   }, []);
 
   const fetchEstablishment = async (id) => {
-    setLoading(true);
-    setError(null);
     try {
+      setLoading(true);
       const response = await api.get(`/api/establishments/${id}`);
       setEstablishment(response.data);
     } catch (err) {
       console.error("Erro ao buscar estabelecimento:", err);
-      setError(
-        "Erro ao carregar dados do estabelecimento. Verifique a conexão com a API."
-      );
+      setError("Erro ao carregar dados do estabelecimento.");
     } finally {
       setLoading(false);
     }
   };
 
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
     setError(null);
+    setSuccess(false);
+    setLoading(true);
 
-    const establishmentData = { name, address, phone };
+    const establishmentData = {
+      name,
+      address,
+      phone,
+    };
 
     try {
       const response = await api.post("/api/establishments", establishmentData);
-      localStorage.setItem("establishmentId", response.data.id);
+
+      const newId = response.data.id;
+      localStorage.setItem("establishmentId", newId);
+
       setSuccess(true);
       setModalInfo({
         title: "Estabelecimento criado!",
-        message:
-          "Seu estabelecimento foi criado com sucesso. Redirecionando...",
+        message: "Seu estabelecimento foi criado com sucesso.",
       });
+
       setIsModalOpen(true);
-      setTimeout(() => navigate("/dashboard"), 2000);
+
+      setTimeout(() => navigate("/dashboard"), 1800);
     } catch (err) {
       console.error("Erro ao criar estabelecimento:", err);
+
       setModalInfo({
-        title: "Erro ao criar estabelecimento",
+        title: "Erro ao criar",
         message: "Verifique os dados e tente novamente.",
       });
+
       setIsModalOpen(true);
     } finally {
       setLoading(false);
@@ -122,15 +138,16 @@ export default function EstablishmentPage() {
   return (
     <Container>
       <Title>Criar Estabelecimento</Title>
+
       <Card>
         <Subtitle>Detalhes do Estabelecimento</Subtitle>
+
         {error && <ErrorMsg>{error}</ErrorMsg>}
-        {success && (
-          <SuccessMsg>Estabelecimento criado com sucesso!</SuccessMsg>
-        )}
+        {success && <SuccessMsg>{success}</SuccessMsg>}
+
         <Form onSubmit={handleSubmit}>
           <FormGroup>
-            <label htmlFor="name">Nome do Estabelecimento</label>
+            <label htmlFor="name">Nome</label>
             <Input
               id="name"
               type="text"
@@ -140,6 +157,7 @@ export default function EstablishmentPage() {
               required
             />
           </FormGroup>
+
           <FormGroup>
             <label htmlFor="address">Endereço</label>
             <Input
@@ -151,6 +169,7 @@ export default function EstablishmentPage() {
               required
             />
           </FormGroup>
+
           <FormGroup>
             <label htmlFor="phone">Telefone</label>
             <Input
@@ -162,17 +181,20 @@ export default function EstablishmentPage() {
               required
             />
           </FormGroup>
+
           <Button type="submit" disabled={loading}>
             {loading ? "Criando..." : "Criar Estabelecimento"}
           </Button>
         </Form>
       </Card>
 
+
       {isModalOpen && (
         <ModalOverlay>
           <ModalContainer>
             <ModalTitle>{modalInfo.title}</ModalTitle>
             <ModalMessage>{modalInfo.message}</ModalMessage>
+
             <ModalActions>
               <ModalButton
                 $variant="confirm"

@@ -10,7 +10,6 @@ export default function TransactionsTable({ transactions = [], onEdit }) {
       <Table>
         <thead>
           <tr>
-            {/* 1. ADICIONADO O CABEÇALHO DA NOVA COLUNA */}
             <th>Cliente</th>
             <th>Descrição</th>
             <th>Valor</th>
@@ -22,7 +21,6 @@ export default function TransactionsTable({ transactions = [], onEdit }) {
         <tbody>
           {transactions.map((t) => (
             <tr key={t.id}>
-              {/* 2. ADICIONADO O DADO DO CLIENTE NA CÉLULA */}
               <td>{t.clientName || "N/A"}</td>
 
               <td>{t.description}</td>
@@ -44,7 +42,6 @@ export default function TransactionsTable({ transactions = [], onEdit }) {
   );
 }
 
-/* Styled Components (seu código de estilos permanece o mesmo) */
 const TableCard = styled.div`
   background: #fff;
   border-radius: 12px;
