@@ -1,12 +1,17 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 
-export default function TransactionModal({ open, onClose, onSave, initialData }) {
+export default function TransactionModal({
+  open,
+  onClose,
+  onSave,
+  initialData,
+}) {
   const [form, setForm] = useState({
     description: "",
     amount_cents: 0,
     transaction_date: new Date().toISOString().split("T")[0],
-    status: "PAID",
+    status: "PENDING",
   });
 
   useEffect(() => {
