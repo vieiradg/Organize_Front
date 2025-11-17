@@ -1,6 +1,17 @@
 import React, { useState, useEffect } from "react";
 import api from "../../../services/api";
-import "./ScheduleServicePage.css";
+import {
+  Container,
+  Title,
+  Form,
+  FormGroup,
+  Label,
+  Select,
+  Input,
+  TextArea,
+  Button,
+  Message
+} from "./scheduleService.styles";
 
 export default function ScheduleServicePage() {
   const [employees, setEmployees] = useState([]);
@@ -12,6 +23,7 @@ export default function ScheduleServicePage() {
     time: "",
     clientNotes: "",
   });
+
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
@@ -61,7 +73,7 @@ export default function ScheduleServicePage() {
       }
 
       const startTimeISO = startDate.toISOString();
-      const service = services.find((s) => s.id === formData.serviceId);
+      const service = services.find((s) => String(s.id) === String(formData.serviceId));
 
       let endTimeISO = startTimeISO;
       if (service) {
@@ -84,6 +96,7 @@ export default function ScheduleServicePage() {
       await api.post(`/api/appointments`, payload);
 
       setMessage("Agendamento realizado com sucesso!");
+
       setFormData({
         employeeId: "",
         serviceId: "",
@@ -91,6 +104,7 @@ export default function ScheduleServicePage() {
         time: "",
         clientNotes: "",
       });
+
     } catch (err) {
       const backendMsg = err.response?.data?.message;
       const status = err.response?.status;
@@ -104,20 +118,20 @@ export default function ScheduleServicePage() {
       } else {
         setMessage("Erro ao realizar o agendamento. Tente novamente.");
       }
+
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="schedule-service-container">
-      <h1 className="titulo-secao-dashboard">Agendar um Serviço</h1>
+    <Container>
+      <Title>Agendar um Serviço</Title>
 
-      <form className="schedule-form" onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label htmlFor="employee">Profissional</label>
-          <select
-            id="employee"
+      <Form onSubmit={handleSubmit}>
+        <FormGroup>
+          <Label>Profissional</Label>
+          <Select
             name="employeeId"
             value={formData.employeeId}
             onChange={handleChange}
@@ -125,17 +139,14 @@ export default function ScheduleServicePage() {
           >
             <option value="">Selecione...</option>
             {employees.map((emp) => (
-              <option key={emp.id} value={emp.id}>
-                {emp.name}
-              </option>
+              <option key={emp.id} value={emp.id}>{emp.name}</option>
             ))}
-          </select>
-        </div>
+          </Select>
+        </FormGroup>
 
-        <div className="form-group">
-          <label htmlFor="service">Serviço</label>
-          <select
-            id="service"
+        <FormGroup>
+          <Label>Serviço</Label>
+          <Select
             name="serviceId"
             value={formData.serviceId}
             onChange={handleChange}
@@ -147,50 +158,47 @@ export default function ScheduleServicePage() {
                 {srv.name} ({srv.durationMinutes} min)
               </option>
             ))}
-          </select>
-        </div>
+          </Select>
+        </FormGroup>
 
-        <div className="form-group">
-          <label htmlFor="date">Data</label>
-          <input
+        <FormGroup>
+          <Label>Data</Label>
+          <Input
             type="date"
-            id="date"
             name="date"
             value={formData.date}
             onChange={handleChange}
             required
           />
-        </div>
+        </FormGroup>
 
-        <div className="form-group">
-          <label htmlFor="time">Horário</label>
-          <input
+        <FormGroup>
+          <Label>Horário</Label>
+          <Input
             type="time"
-            id="time"
             name="time"
             value={formData.time}
             onChange={handleChange}
             required
           />
-        </div>
+        </FormGroup>
 
-        <div className="form-group">
-          <label htmlFor="clientNotes">Observações</label>
-          <textarea
-            id="clientNotes"
+        <FormGroup>
+          <Label>Observações</Label>
+          <TextArea
             name="clientNotes"
             value={formData.clientNotes}
             onChange={handleChange}
             placeholder="Algum detalhe importante?"
           />
-        </div>
+        </FormGroup>
 
-        <button type="submit" className="btn-primary" disabled={loading}>
+        <Button type="submit" disabled={loading}>
           {loading ? "Agendando..." : "Confirmar Agendamento"}
-        </button>
-      </form>
+        </Button>
+      </Form>
 
-      {message && <p className="form-message">{message}</p>}
-    </div>
+      {message && <Message>{message}</Message>}
+    </Container>
   );
 }
