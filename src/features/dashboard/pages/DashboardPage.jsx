@@ -38,9 +38,10 @@ export default function DashboardPage() {
   }, []);
 
   if (loading) return <div>Carregando...</div>;
-  if (!dashboardData) return <div>Falha ao carregar os dados do dashboard.</div>;
+  if (!dashboardData)
+    return <div>Falha ao carregar os dados do dashboard.</div>;
 
-  const next = dashboardData.nextAppointment;
+  // const next = dashboardData.nextAppointment;
 
   return (
     <div className="dashboard-content">
@@ -66,20 +67,20 @@ export default function DashboardPage() {
         <div className="widget-card">
           <p className="widget-titulo">Próximo Agendamento</p>
 
-          <h2 className="widget-valor">
+          {/* <h2 className="widget-valor">
             {next?.startTime
               ? new Date(next.startTime).toLocaleTimeString([], {
                   hour: "2-digit",
                   minute: "2-digit",
                 })
               : "N/A"}
-          </h2>
+          </h2> */}
 
-          <p className="widget-subtexto">
+          {/* <p className="widget-subtexto">
             {next
               ? `${next.serviceName} com ${next.employeeName}`
               : "Nenhum"}
-          </p>
+          </p> */}
         </div>
         {/* FIM DO BLOCO CORRIGIDO */}
 
@@ -109,47 +110,6 @@ export default function DashboardPage() {
                   </div>
                 </div>
                 <span className="item-meta">Hoje</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <div className="widget-card card-lista">
-          <h3 className="widget-titulo">Principais Clientes do Mês</h3>
-          <ul className="lista-simples">
-            {dashboardData.topCustomers.map((customer, index) => (
-              <li key={index} className="lista-item">
-                <div className="item-info">
-                  <div className="item-avatar">
-                    {customer.name.substring(0, 2)}
-                  </div>
-                  <div>
-                    <p className="item-nome">{customer.name}</p>
-                    <p className="item-meta">
-                      R$ {(customer.revenue / 100).toFixed(2)}
-                    </p>
-                  </div>
-                </div>
-                <span className="item-meta">
-                  {customer.appointmentCount} agendamentos
-                </span>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <div className="widget-card card-lista">
-          <h3 className="widget-titulo">Avaliações Recentes</h3>
-          <ul className="lista-simples">
-            {dashboardData.recentReviews.map((review, index) => (
-              <li key={index} className="lista-item-avaliacao">
-                <div className="avaliacao-estrelas">
-                  {[...Array(5)].map((_, i) => (
-                    <EstrelaIcone key={i} preenchida={i < review.rating} />
-                  ))}
-                </div>
-                <p className="item-nome">{review.customerName}</p>
-                <p className="item-meta">"{review.comment}"</p>
               </li>
             ))}
           </ul>
