@@ -31,7 +31,6 @@ export default function FinanceiroPage() {
 
         setData(financeRes.data);
         setTransactions(transRes.data);
-
       } catch (err) {
         setError("Erro ao carregar dados financeiros.");
       } finally {
@@ -89,7 +88,8 @@ export default function FinanceiroPage() {
         <WidgetCard>
           <WidgetTitle>Despesas do Mês</WidgetTitle>
           <WidgetValue>
-            R$ {(Math.abs(data.monthlyExpenses) / 100)
+            R${" "}
+            {(Math.abs(data.monthlyExpenses) / 100)
               .toFixed(2)
               .replace(".", ",")}
           </WidgetValue>
@@ -110,12 +110,13 @@ export default function FinanceiroPage() {
         <WidgetCard>
           <WidgetTitle>Média por Agendamento</WidgetTitle>
           <WidgetValue>
-            R$ {(data.averageRevenuePerAppointment / 100)
+            R${" "}
+            {(data.averageRevenuePerAppointment / 100)
               .toFixed(2)
               .replace(".", ",")}
           </WidgetValue>
           <WidgetSub>
-            Baseado em {data.totalAppointments} agendamentos
+            Baseado em {data.totalAppointments} agendamentos pagos
           </WidgetSub>
         </WidgetCard>
       </WidgetGrid>
