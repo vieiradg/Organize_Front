@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import api from "@services/api";
+
 import {
   Overlay,
   Modal,
@@ -15,6 +16,7 @@ import {
   ErrorMessage,
   ButtonPrimary,
 } from "./AppointmentModal.styles";
+
 import {
   CalendarPlus,
   Clock,
@@ -26,7 +28,12 @@ import {
   X,
 } from "lucide-react";
 
-const AppointmentModal = ({ isOpen, onClose, selectedHour, onAppointmentCreated }) => {
+const AppointmentModal = ({
+  isOpen,
+  onClose,
+  selectedHour,
+  onAppointmentCreated,
+}) => {
   const [customers, setCustomers] = useState([]);
   const [services, setServices] = useState([]);
   const [employees, setEmployees] = useState([]);
@@ -41,6 +48,7 @@ const AppointmentModal = ({ isOpen, onClose, selectedHour, onAppointmentCreated 
 
   const establishmentId = localStorage.getItem("establishmentId");
   const token = localStorage.getItem("token");
+
 
   useEffect(() => {
     if (isOpen && establishmentId && token) {
@@ -58,10 +66,9 @@ const AppointmentModal = ({ isOpen, onClose, selectedHour, onAppointmentCreated 
             }),
           ]);
 
-          // Normaliza para sempre ter name, independente de como o backend envia
           const normalizedClients = customersRes.data.map((c) => ({
             id: c.id,
-            name: c.clientName || c.name || "Cliente sem nome",
+            name: c.name || c.clientName || "Cliente sem nome",
           }));
 
           setCustomers(normalizedClients);
@@ -69,9 +76,10 @@ const AppointmentModal = ({ isOpen, onClose, selectedHour, onAppointmentCreated 
           setEmployees(employeesRes.data || []);
         } catch (err) {
           console.error("Erro ao buscar dados:", err);
-          setError("Erro ao carregar dados (clientes, serviços ou funcionários).");
+          setError("Erro ao carregar dados.");
         }
       };
+
       fetchData();
     }
   }, [isOpen, establishmentId, token]);
@@ -93,14 +101,16 @@ const AppointmentModal = ({ isOpen, onClose, selectedHour, onAppointmentCreated 
       const startTime = new Date();
       startTime.setHours(selectedHour, 0, 0, 0);
 
-      const service = services.find((s) => s.id === selectedServiceId);
+      const service = services.find(
+        (s) => String(s.id) === String(selectedServiceId)
+      );
       const duration = service?.durationMinutes || 60;
 
       const endTime = new Date(startTime);
       endTime.setMinutes(startTime.getMinutes() + duration);
 
       const appointmentData = {
-        customerId: selectedCustomerId,
+        customerId: selectedCustomerId, 
         serviceId: selectedServiceId,
         establishmentId,
         employeeId: selectedEmployeeId,
@@ -110,6 +120,8 @@ const AppointmentModal = ({ isOpen, onClose, selectedHour, onAppointmentCreated 
         clientNotes,
       };
 
+      console.log("📌 Enviando para o backend:", appointmentData);
+
       await api.post("/api/appointments", appointmentData, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -118,7 +130,10 @@ const AppointmentModal = ({ isOpen, onClose, selectedHour, onAppointmentCreated 
       onClose();
     } catch (err) {
       console.error("Erro ao criar agendamento:", err);
-      setError(err.response?.data?.message || "Erro ao criar agendamento. Tente novamente.");
+      setError(
+        err.response?.data?.message ||
+          "Erro ao criar agendamento. Tente novamente."
+      );
     } finally {
       setLoading(false);
     }
@@ -139,6 +154,7 @@ const AppointmentModal = ({ isOpen, onClose, selectedHour, onAppointmentCreated 
         <Form onSubmit={handleSubmit}>
           {error && <ErrorMessage>{error}</ErrorMessage>}
 
+          {/* HORÁRIO */}
           <FormGroup>
             <Label>
               <Clock size={16} /> Horário:
@@ -146,6 +162,7 @@ const AppointmentModal = ({ isOpen, onClose, selectedHour, onAppointmentCreated 
             <Input type="text" value={`${selectedHour}:00`} readOnly />
           </FormGroup>
 
+          {/* CLIENTE */}
           <FormGroup>
             <Label>
               <User size={16} /> Cliente:
@@ -164,6 +181,7 @@ const AppointmentModal = ({ isOpen, onClose, selectedHour, onAppointmentCreated 
             </Select>
           </FormGroup>
 
+          {/* SERVIÇO */}
           <FormGroup>
             <Label>
               <Briefcase size={16} /> Serviço:
@@ -176,12 +194,14 @@ const AppointmentModal = ({ isOpen, onClose, selectedHour, onAppointmentCreated 
               <option value="">Selecione um serviço</option>
               {services.map((s) => (
                 <option key={s.id} value={s.id}>
-                  {s.name} — R$ {(s.priceCents / 100).toFixed(2)} ({s.durationMinutes} min)
+                  {s.name} — R$ {(s.priceCents / 100).toFixed(2)} (
+                  {s.durationMinutes} min)
                 </option>
               ))}
             </Select>
           </FormGroup>
 
+          {/* FUNCIONÁRIO */}
           <FormGroup>
             <Label>
               <UserCog size={16} /> Funcionário:
@@ -200,11 +220,15 @@ const AppointmentModal = ({ isOpen, onClose, selectedHour, onAppointmentCreated 
             </Select>
           </FormGroup>
 
+          {/* STATUS */}
           <FormGroup>
             <Label>
               <Flag size={16} /> Status:
             </Label>
-            <Select value={status} onChange={(e) => setStatus(e.target.value)}>
+            <Select
+              value={status}
+              onChange={(e) => setStatus(e.target.value)}
+            >
               <option value="PENDING">Pendente</option>
               <option value="CONFIRMED">Confirmado</option>
               <option value="CANCELED">Cancelado</option>
@@ -215,6 +239,7 @@ const AppointmentModal = ({ isOpen, onClose, selectedHour, onAppointmentCreated 
             </Select>
           </FormGroup>
 
+          {/* NOTAS */}
           <FormGroup>
             <Label>
               <FileText size={16} /> Notas:

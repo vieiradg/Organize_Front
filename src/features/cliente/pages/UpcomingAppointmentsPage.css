@@ -1,87 +1,94 @@
 .dashboard-cliente-container {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
 }
 
 .cards-resumo-wrapper {
   display: flex;
   gap: 2rem;
-  margin-bottom: 2rem;
+  margin-bottom: 2.5rem;
 }
 
 .card-resumo {
-  background-color: white;
-  border-radius: 8px;
-  padding: 1.5rem;
+  background-color: var(--cor-fundo-card);
+  border: 1px solid var(--cor-borda-card);
+  border-radius: 12px;
+  padding: 2rem;
   flex-grow: 1;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 3px var(--cor-sombra-card);
   display: flex;
   flex-direction: column;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.card-resumo:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.08);
 }
 
 .card-resumo-titulo {
-  color: #555;
-  font-size: 0.9rem;
+  color: var(--cor-texto-sub-card);
+  font-size: 0.95rem;
 }
 
 .card-resumo-dado-principal {
-  font-size: 2.5rem;
-  font-weight: 600;
-  color: #333;
-  margin: 0.5rem 0;
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--cor-texto-titulo-card);
+  margin: .4rem 0 .5rem 0;
 }
 
 .card-resumo-descricao {
-  color: #777;
-  font-size: 0.8rem;
+  color: var(--cor-texto-sub-card);
+  font-size: 0.85rem;
 }
 
+/* ---- HISTÓRICO ---- */
 .historico-container {
-  background-color: white;
-  border-radius: 8px;
-  padding: 1.5rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  background-color: var(--cor-fundo-card);
+  border: 1px solid var(--cor-borda-card);
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 1px 3px var(--cor-sombra-card);
+  max-width: 900px;
 }
 
 .historico-titulo {
-  font-size: 1.2rem;
-  font-weight: 600;
+  font-size: 1.5rem;
+  font-weight: 700;
   margin-bottom: 1.5rem;
-  color: #333;
+  color: var(--cor-texto-titulo-card);
 }
 
 .historico-lista {
   display: flex;
   flex-direction: column;
+  gap: 1rem;
 }
 
 .historico-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 0;
-  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #eee;
 }
 
 .historico-item:last-child {
   border-bottom: none;
 }
 
-.historico-item-info {
-  display: flex;
-  flex-direction: column;
-}
-
 .historico-item-servico {
-  font-weight: 500;
-  color: #333;
+  font-weight: 600;
+  color: var(--cor-texto-titulo-card);
+  font-size: 1rem;
 }
 
 .historico-item-profissional {
-  color: #777;
+  color: var(--cor-texto-sub-card);
   font-size: 0.9rem;
 }
 
 .historico-item-data {
-  font-weight: 500;
-  color: #555;
+  font-weight: 600;
+  color: var(--highlight-blue);
 }
