@@ -37,17 +37,15 @@ export default function DashboardPage() {
     fetchData();
   }, []);
 
-  if (loading) {
-    return <div>Carregando...</div>;
-  }
+  if (loading) return <div>Carregando...</div>;
+  if (!dashboardData) return <div>Falha ao carregar os dados do dashboard.</div>;
 
-  if (!dashboardData) {
-    return <div>Falha ao carregar os dados do dashboard.</div>;
-  }
+  const next = dashboardData.nextAppointment;
 
   return (
     <div className="dashboard-content">
       <h1 className="titulo-secao-dashboard">Dashboard</h1>
+
       <div className="grid-widgets">
         <div className="widget-card">
           <p className="widget-titulo">Faturamento do Mês</p>
@@ -55,6 +53,7 @@ export default function DashboardPage() {
             R$ {(dashboardData.monthlyRevenue / 100).toFixed(2)}
           </h2>
         </div>
+
         <div className="widget-card">
           <p className="widget-titulo">Agendamentos Hoje</p>
           <h2 className="widget-valor">{dashboardData.appointmentsToday}</h2>
@@ -62,17 +61,33 @@ export default function DashboardPage() {
             {dashboardData.confirmedAppointmentsToday} agendamentos confirmados
           </p>
         </div>
+
+        {/* ✅ BLOCO CORRIGIDO */}
         <div className="widget-card">
           <p className="widget-titulo">Próximo Agendamento</p>
-          <h2 className="widget-valor">{dashboardData.nextAppointmentTime}</h2>
+
+          <h2 className="widget-valor">
+            {next?.startTime
+              ? new Date(next.startTime).toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })
+              : "N/A"}
+          </h2>
+
           <p className="widget-subtexto">
-            {dashboardData.nextAppointmentDescription}
+            {next
+              ? `${next.serviceName} com ${next.employeeName}`
+              : "Nenhum"}
           </p>
         </div>
+        {/* FIM DO BLOCO CORRIGIDO */}
+
         <div className="widget-card">
           <p className="widget-titulo">Novos Clientes</p>
           <h2 className="widget-valor">{dashboardData.newCustomers}</h2>
         </div>
+
         <div className="widget-card card-lista">
           <h3 className="widget-titulo">Próximos Agendamentos</h3>
           <ul className="lista-simples">
@@ -98,6 +113,7 @@ export default function DashboardPage() {
             ))}
           </ul>
         </div>
+
         <div className="widget-card card-lista">
           <h3 className="widget-titulo">Principais Clientes do Mês</h3>
           <ul className="lista-simples">
@@ -121,6 +137,7 @@ export default function DashboardPage() {
             ))}
           </ul>
         </div>
+
         <div className="widget-card card-lista">
           <h3 className="widget-titulo">Avaliações Recentes</h3>
           <ul className="lista-simples">

@@ -65,20 +65,30 @@ export default function ScheduleServicePage() {
         return;
       }
 
-      const startDate = new Date(`${formData.date}T${formData.time}:00`);
-      if (isNaN(startDate.getTime())) {
+      // 🔧 Monta Date sem timezone errado
+      const rawStart = new Date(`${formData.date}T${formData.time}:00`);
+
+      if (isNaN(rawStart.getTime())) {
         setMessage("Data ou hora inválida.");
         setLoading(false);
         return;
       }
 
+      // 🔧 AJUSTE DE FUSO HORÁRIO (corrige UTC → horário do Brasil)
+      const offsetMs = 3 * 60 * 60 * 1000; // 3 horas
+      const startDate = new Date(rawStart.getTime() - offsetMs);
+
+      // transforma em ISO novamente
       const startTimeISO = startDate.toISOString();
+
+      // 🔧 calcula fim
       const service = services.find((s) => String(s.id) === String(formData.serviceId));
 
       let endTimeISO = startTimeISO;
+
       if (service) {
         const duration = Number(service.durationMinutes) || 30;
-        const endDate = new Date(startTimeISO);
+        const endDate = new Date(startDate);
         endDate.setMinutes(endDate.getMinutes() + duration);
         endTimeISO = endDate.toISOString();
       }
