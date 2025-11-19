@@ -1,5 +1,9 @@
 .dashboard-cliente-container {
   font-family: "Poppins", sans-serif;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
 }
 
 .cards-resumo-wrapper {
@@ -17,12 +21,12 @@
   box-shadow: 0 1px 3px var(--cor-sombra-card);
   display: flex;
   flex-direction: column;
-  transition: transform .2s ease, box-shadow .2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .card-resumo:hover {
   transform: translateY(-4px);
-  box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
 }
 
 .card-resumo-titulo {
@@ -34,7 +38,7 @@
   font-size: 2.2rem;
   font-weight: 700;
   color: var(--cor-texto-titulo-card);
-  margin: .4rem 0 .5rem 0;
+  margin: 0.4rem 0 0.5rem 0;
 }
 
 .card-resumo-descricao {

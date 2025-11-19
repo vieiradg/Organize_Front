@@ -41,7 +41,24 @@ export default function DashboardPage() {
   if (!dashboardData)
     return <div>Falha ao carregar os dados do dashboard.</div>;
 
-  // const next = dashboardData.nextAppointment;
+  const next = dashboardData.nextAppointment;
+
+  function getDaysLabel(dateString) {
+    const today = new Date();
+    const appointmentDate = new Date(dateString);
+
+    today.setHours(0, 0, 0, 0);
+    appointmentDate.setHours(0, 0, 0, 0);
+
+    const diffTime = appointmentDate - today;
+    const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+
+    if (diffDays === 0) return "Hoje";
+    if (diffDays === 1) return "Amanhã";
+    if (diffDays < 0) return `${Math.abs(diffDays)} dias atrás`;
+
+    return `Daqui a ${diffDays} dias`;
+  }
 
   return (
     <div className="dashboard-content">
@@ -63,26 +80,20 @@ export default function DashboardPage() {
           </p>
         </div>
 
-        {/* ✅ BLOCO CORRIGIDO */}
         <div className="widget-card">
           <p className="widget-titulo">Próximo Agendamento</p>
-
-          {/* <h2 className="widget-valor">
+          <h2 className="widget-valor">
             {next?.startTime
               ? new Date(next.startTime).toLocaleTimeString([], {
                   hour: "2-digit",
                   minute: "2-digit",
                 })
               : "N/A"}
-          </h2> */}
-
-          {/* <p className="widget-subtexto">
-            {next
-              ? `${next.serviceName} com ${next.employeeName}`
-              : "Nenhum"}
-          </p> */}
+          </h2>{" "}
+          <p className="widget-subtexto">
+            {next ? `${next.serviceName} com ${next.employeeName}` : "Nenhum"}
+          </p>
         </div>
-        {/* FIM DO BLOCO CORRIGIDO */}
 
         <div className="widget-card">
           <p className="widget-titulo">Novos Clientes</p>
@@ -109,7 +120,9 @@ export default function DashboardPage() {
                     </p>
                   </div>
                 </div>
-                <span className="item-meta">Hoje</span>
+                <span className="item-meta">
+                  {getDaysLabel(appointment.startTime)}
+                </span>
               </li>
             ))}
           </ul>

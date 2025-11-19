@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { format, isSameDay } from "date-fns";
+import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { ChevronLeft, ChevronRight, Clock, User, Scissors } from "lucide-react";
 
@@ -36,7 +36,11 @@ const DailyCalendar = () => {
   const [selectedHourForNew, setSelectedHourForNew] = useState(null);
 
   const hours = useMemo(
-    () => Array.from({ length: HOURS_END - HOURS_START }, (_, i) => i + HOURS_START),
+    () =>
+      Array.from(
+        { length: HOURS_END - HOURS_START },
+        (_, i) => i + HOURS_START
+      ),
     []
   );
 
@@ -55,7 +59,6 @@ const DailyCalendar = () => {
     });
 
   const goToday = () => setCurrentDate(new Date());
-  const isToday = (date) => isSameDay(date, new Date());
 
   useEffect(() => {
     const fetchAppointments = async () => {
@@ -108,8 +111,27 @@ const DailyCalendar = () => {
   const formatLabel = (date) =>
     format(date, "EEEE, dd 'de' MMMM", { locale: ptBR });
 
-  const formatTime = (iso) =>
-    format(new Date(iso), "HH:mm", { locale: ptBR });
+  const formatTime = (iso) => format(new Date(iso), "HH:mm", { locale: ptBR });
+
+  function formatRelativeLabel(date) {
+    const today = new Date();
+
+    today.setHours(0, 0, 0, 0);
+    const target = new Date(date);
+    target.setHours(0, 0, 0, 0);
+
+    const diffTime = target - today;
+    const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+
+    if (diffDays === 0) return "Hoje";
+    if (diffDays === 1) return "Amanhã";
+    if (diffDays === -1) return "Ontem";
+
+    if (diffDays > 1) return `Daqui a ${diffDays} dias`;
+    if (diffDays < -1) return `${Math.abs(diffDays)} dias atrás`;
+
+    return formatLabel(date);
+  }
 
   return (
     <DailyContainer>
@@ -120,11 +142,9 @@ const DailyCalendar = () => {
 
         <DateLabel>
           {formatLabel(currentDate)}
-          {!isToday(currentDate) && (
-            <button className="today-btn" onClick={goToday}>
-              Hoje
-            </button>
-          )}
+          <button className="today-btn" onClick={goToday}>
+            {formatRelativeLabel(currentDate)}
+          </button>
         </DateLabel>
 
         <NavButton onClick={goNextDay} aria-label="Próximo dia">
@@ -191,16 +211,17 @@ const DailyCalendar = () => {
         />
       )}
 
-      {isNewAppointmentOpen && (
+      {isNewAppointmentOpen && selectedHourForNew !== null && (
         <AppointmentModal
           isOpen={isNewAppointmentOpen}
           onClose={() => setIsNewAppointmentOpen(false)}
           selectedHour={selectedHourForNew}
+          currentDate={currentDate}
           onAppointmentCreated={() => {
             setIsNewAppointmentOpen(false);
-            agendaService.getAppointmentsByDate(currentDate).then((data) =>
-              setAppointments(Array.isArray(data) ? data : [])
-            );
+            agendaService
+              .getAppointmentsByDate(currentDate)
+              .then((data) => setAppointments(Array.isArray(data) ? data : []));
           }}
         />
       )}

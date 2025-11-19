@@ -10,7 +10,7 @@ import {
   Input,
   TextArea,
   Button,
-  Message
+  Message,
 } from "./scheduleService.styles";
 
 export default function ScheduleServicePage() {
@@ -82,18 +82,21 @@ export default function ScheduleServicePage() {
       const startTimeISO = startDate.toISOString();
 
       // 🔧 calcula fim
-      const service = services.find((s) => String(s.id) === String(formData.serviceId));
+      const service = services.find(
+        (s) => String(s.id) === String(formData.serviceId)
+      );
 
       let endTimeISO = startTimeISO;
 
       if (service) {
-        const duration = Number(service.durationMinutes) || 30;
+        const duration = Number(service.duration) || 30;
         const endDate = new Date(startDate);
         endDate.setMinutes(endDate.getMinutes() + duration);
         endTimeISO = endDate.toISOString();
       }
 
       const payload = {
+        customerId: localStorage.getItem("customerId"),
         serviceId: String(formData.serviceId),
         establishmentId: String(establishmentId),
         employeeId: String(formData.employeeId),
@@ -114,7 +117,6 @@ export default function ScheduleServicePage() {
         time: "",
         clientNotes: "",
       });
-
     } catch (err) {
       const backendMsg = err.response?.data?.message;
       const status = err.response?.status;
@@ -128,7 +130,6 @@ export default function ScheduleServicePage() {
       } else {
         setMessage("Erro ao realizar o agendamento. Tente novamente.");
       }
-
     } finally {
       setLoading(false);
     }
@@ -149,7 +150,9 @@ export default function ScheduleServicePage() {
           >
             <option value="">Selecione...</option>
             {employees.map((emp) => (
-              <option key={emp.id} value={emp.id}>{emp.name}</option>
+              <option key={emp.id} value={emp.id}>
+                {emp.name}
+              </option>
             ))}
           </Select>
         </FormGroup>
@@ -165,7 +168,7 @@ export default function ScheduleServicePage() {
             <option value="">Selecione...</option>
             {services.map((srv) => (
               <option key={srv.id} value={srv.id}>
-                {srv.name} ({srv.durationMinutes} min)
+                {srv.name} ({srv.duration} min)
               </option>
             ))}
           </Select>

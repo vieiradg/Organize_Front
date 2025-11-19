@@ -25,7 +25,6 @@ export default function UpcomingAppointmentsPage() {
     fetchAppointments();
   }, []);
 
-
   const sortedAppointments = useMemo(() => {
     return [...appointments].sort(
       (a, b) => new Date(a.startTime) - new Date(b.startTime)
@@ -33,7 +32,6 @@ export default function UpcomingAppointmentsPage() {
   }, [appointments]);
 
   const next = sortedAppointments[0];
-
 
   if (loading)
     return (
@@ -56,7 +54,6 @@ export default function UpcomingAppointmentsPage() {
         <p>Nenhum agendamento encontrado para hoje.</p>
       </div>
     );
-
 
   return (
     <div className="dashboard-cliente-container">
@@ -94,7 +91,6 @@ export default function UpcomingAppointmentsPage() {
         </div>
       </div>
 
-
       <div className="historico-container">
         <h2 className="historico-titulo">Histórico de Agendamentos</h2>
 
@@ -103,7 +99,7 @@ export default function UpcomingAppointmentsPage() {
             <div className="historico-item" key={item.id}>
               <div className="historico-item-info">
                 <span className="historico-item-servico">
-                  {item.serviceName}
+                  {item.serviceName}{" "}
                 </span>
                 <span className="historico-item-profissional">
                   Com {item.employeeName}
