@@ -46,21 +46,51 @@ export default function FinanceiroPage() {
       const headers = {
         adminId,
         Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
       };
 
       if (transaction.id) {
-        await api.patch(
+        const response = await api.patch(
           `/api/admin/transactions/${transaction.id}/status`,
           { status: transaction.status },
           { headers }
         );
-      } else {
-        await api.post("/api/admin/transactions", transaction, { headers });
+
+        setTransactions((prev) =>
+          prev.map((t) => (t.id === transaction.id ? response.data : t))
+        );
+
+        const dashboardRes = await api.get("/api/dashboard/finance", {
+          headers,
+        });
+        setData(dashboardRes.data);
+
+        setModalOpen(false);
+        return;
       }
 
-      window.location.reload();
+      const newTransactionPayload = {
+        appointment_id: transaction.appointment_id || null,
+        description: transaction.description || "",
+        amount_cents: Number(transaction.amount_cents) || 0,
+        transaction_date: transaction.transaction_date,
+        status: transaction.status || "PENDING",
+      };
+
+      const response = await api.post(
+        "/api/admin/transactions",
+        newTransactionPayload,
+        { headers }
+      );
+
+      setTransactions((prev) => [...prev, response.data]);
+
+      const dashboardRes = await api.get("/api/dashboard/finance", { headers });
+      setData(dashboardRes.data);
+
       setModalOpen(false);
-    } catch {
+    } catch (err) {
+      console.error("Erro ao salvar transação:", err);
       alert("Não foi possível salvar a transação.");
     }
   };

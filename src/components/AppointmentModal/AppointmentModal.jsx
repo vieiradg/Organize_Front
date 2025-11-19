@@ -32,6 +32,7 @@ const AppointmentModal = ({
   isOpen,
   onClose,
   selectedHour,
+  currentDate,
   onAppointmentCreated,
 }) => {
   const [customers, setCustomers] = useState([]);
@@ -48,7 +49,6 @@ const AppointmentModal = ({
 
   const establishmentId = localStorage.getItem("establishmentId");
   const token = localStorage.getItem("token");
-
 
   useEffect(() => {
     if (isOpen && establishmentId && token) {
@@ -98,23 +98,27 @@ const AppointmentModal = ({
         return;
       }
 
-      const startTime = new Date();
-      startTime.setHours(selectedHour, 0, 0, 0);
+      const startTimeLocal = new Date(currentDate);
+      startTimeLocal.setHours(selectedHour, 0, 0, 0);
+
+      const startTimeUTC = new Date(
+        startTimeLocal.getTime() - startTimeLocal.getTimezoneOffset() * 60000
+      );
 
       const service = services.find(
         (s) => String(s.id) === String(selectedServiceId)
       );
       const duration = service?.durationMinutes || 60;
 
-      const endTime = new Date(startTime);
-      endTime.setMinutes(startTime.getMinutes() + duration);
+      const endTime = new Date(startTimeUTC);
+      endTime.setMinutes(startTimeUTC.getMinutes() + duration);
 
       const appointmentData = {
-        customerId: selectedCustomerId, 
+        customerId: selectedCustomerId,
         serviceId: selectedServiceId,
         establishmentId,
         employeeId: selectedEmployeeId,
-        startTime: startTime.toISOString(),
+        startTime: startTimeUTC.toISOString(),
         endTime: endTime.toISOString(),
         status,
         clientNotes,
@@ -194,8 +198,8 @@ const AppointmentModal = ({
               <option value="">Selecione um serviço</option>
               {services.map((s) => (
                 <option key={s.id} value={s.id}>
-                  {s.name} — R$ {(s.priceCents / 100).toFixed(2)} (
-                  {s.durationMinutes} min)
+                  {s.name} — R$ {(s.priceCents / 100).toFixed(2)} ({s.duration}{" "}
+                  min)
                 </option>
               ))}
             </Select>
@@ -225,10 +229,7 @@ const AppointmentModal = ({
             <Label>
               <Flag size={16} /> Status:
             </Label>
-            <Select
-              value={status}
-              onChange={(e) => setStatus(e.target.value)}
-            >
+            <Select value={status} onChange={(e) => setStatus(e.target.value)}>
               <option value="PENDING">Pendente</option>
               <option value="CONFIRMED">Confirmado</option>
               <option value="CANCELED">Cancelado</option>

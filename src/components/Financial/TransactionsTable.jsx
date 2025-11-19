@@ -4,6 +4,12 @@ import styled from "styled-components";
 export default function TransactionsTable({ transactions = [], onEdit }) {
   if (!transactions.length) return <Empty>Nenhuma transação encontrada.</Empty>;
 
+  const formatDatePlusOne = (dateString) => {
+    const date = new Date(dateString);
+    date.setDate(date.getDate() + 1);
+    return date.toLocaleDateString("pt-BR");
+  };
+
   return (
     <TableCard>
       <h3>Transações Recentes</h3>
@@ -27,8 +33,10 @@ export default function TransactionsTable({ transactions = [], onEdit }) {
               <td style={{ color: t.amount_cents < 0 ? "#ef4444" : "#16a34a" }}>
                 R$ {(t.amount_cents / 100).toFixed(2).replace(".", ",")}
               </td>
-              <td>{new Date(t.transaction_date).toLocaleDateString("pt-BR")}</td>
-              <td style={{ color: t.status === "PAID" ? "#16a34a" : "#f97316" }}>
+              <td>{formatDatePlusOne(t.transaction_date)}</td>
+              <td
+                style={{ color: t.status === "PAID" ? "#16a34a" : "#f97316" }}
+              >
                 {t.status === "PAID" ? "Pago" : "Pendente"}
               </td>
               <td>

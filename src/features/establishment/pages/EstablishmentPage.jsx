@@ -22,7 +22,7 @@ import {
   Subtitle,
   Title,
   ErrorMsg,
-  SuccessMsg
+  SuccessMsg,
 } from "./establishment.style.js";
 
 export default function EstablishmentPage() {
@@ -62,7 +62,6 @@ export default function EstablishmentPage() {
     }
   };
 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
@@ -72,7 +71,7 @@ export default function EstablishmentPage() {
     const establishmentData = {
       name,
       address,
-      phone,
+      contactPhone: phone,
     };
 
     try {
@@ -187,7 +186,6 @@ export default function EstablishmentPage() {
           </Button>
         </Form>
       </Card>
-
 
       {isModalOpen && (
         <ModalOverlay>
