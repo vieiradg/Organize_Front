@@ -182,7 +182,7 @@ export default function EquipePage() {
 
   return (
     <Container>
-      <Title>Gerir Equipe</Title>
+      <Title> Equipe</Title>
 
       <Card>
         <Subtitle>Adicionar Novo Membro</Subtitle>

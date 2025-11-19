@@ -157,7 +157,7 @@ export default function ServicePage() {
   return (
     <PageContainer>
       <PageHeader>
-        <h1>Gerir Serviços</h1>
+        <h1> Serviços</h1>
         <PrimaryButton onClick={() => openModal()}>
           Adicionar Serviço
         </PrimaryButton>
