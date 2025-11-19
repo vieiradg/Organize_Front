@@ -13,6 +13,7 @@ import {
   FilterContainer,
   SelectFilter,
 } from "./WeeklyCalendar.styles";
+
 import agendaService from "../agendaService";
 import AppointmentDetailsModal from "../../../components/AppointmentModal/AppointmentDetailsModal";
 import api from "../../../services/api";
@@ -75,6 +76,7 @@ const WeeklyCalendar = ({ initialDate = new Date() }) => {
         console.error("Erro ao carregar agendamentos:", error);
       }
     };
+
     fetchAppointments();
   }, [currentDate]);
 
@@ -92,6 +94,7 @@ const WeeklyCalendar = ({ initialDate = new Date() }) => {
         console.error("Erro ao carregar funcionários:", error);
       }
     };
+
     if (establishmentId && token) fetchEmployees();
   }, [establishmentId, token]);
 
@@ -99,6 +102,10 @@ const WeeklyCalendar = ({ initialDate = new Date() }) => {
     try {
       setLoading(true);
       await agendaService.updateAppointmentStatus(id, newStatus);
+
+      setAppointments((prev) =>
+        prev.map((a) => (a.id === id ? { ...a, status: newStatus } : a))
+      );
 
       setSelectedAppointment(null);
     } catch (error) {
@@ -110,6 +117,7 @@ const WeeklyCalendar = ({ initialDate = new Date() }) => {
 
   const previousWeek = () =>
     setCurrentDate((prev) => new Date(prev.setDate(prev.getDate() - 7)));
+
   const nextWeek = () =>
     setCurrentDate((prev) => new Date(prev.setDate(prev.getDate() + 7)));
 
@@ -117,6 +125,7 @@ const WeeklyCalendar = ({ initialDate = new Date() }) => {
     <WeeklyCalendarContainer>
       <CalendarHeader>
         <NavButton onClick={previousWeek}>‹</NavButton>
+
         <h3>
           {weekDates[0].toLocaleDateString("pt-BR", {
             day: "2-digit",
@@ -148,6 +157,7 @@ const WeeklyCalendar = ({ initialDate = new Date() }) => {
       </CalendarHeader>
 
       <TimeColumnSpacer />
+
       {weekDates.map((date, index) => (
         <DayHeader key={index} isWeekend={index === 0 || index === 6}>
           {daysOfWeek[index]} <br />
