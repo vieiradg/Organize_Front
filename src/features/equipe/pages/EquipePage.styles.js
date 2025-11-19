@@ -1,26 +1,33 @@
 import styled, { keyframes } from "styled-components";
 
-export const Container = styled.div``;
+export const Container = styled.div`
+  padding: 1rem;
+`;
 
 export const Title = styled.h1`
-  font-size: 1.8rem;
+  font-size: 1.6rem;
   font-weight: 600;
-  margin-bottom: 1.5rem;
-  color: #222;
+  margin-bottom: 1.2rem;
+  color: #1e293b;
 `;
 
 export const Card = styled.div`
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  background: #ffffff;
+  border-radius: 14px;
   padding: 1.5rem;
   margin-bottom: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+
+  @media (max-width: 600px) {
+    padding: 1rem;
+  }
 `;
 
 export const Subtitle = styled.h3`
-  margin-bottom: 1rem;
+  margin-bottom: 0.8rem;
+  font-size: 1.1rem;
   font-weight: 500;
-  color: #333;
+  color: #334155;
 `;
 
 export const Form = styled.form`
@@ -32,33 +39,45 @@ export const Form = styled.form`
 export const FormRow = styled.div`
   display: flex;
   gap: 1rem;
-  flex-wrap: wrap;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
 `;
 
 export const Input = styled.input`
   flex: 1;
-  padding: 0.75rem 1rem;
+  padding: 0.7rem 0.9rem;
   border-radius: 8px;
-  border: 1px solid #ddd;
+  border: 1px solid #d0d7df;
+  color: #1e293b;
   font-size: 0.95rem;
+
   &:focus {
-    border-color: #0077ff;
+    border-color: #ea580c;
+    box-shadow: 0 0 0 1px #ea580c28;
     outline: none;
   }
 `;
 
 export const Button = styled.button`
-  background: ${({ secondary }) => (secondary ? "#f2f2f2" : "#ea580c")};
-  color: ${({ secondary }) => (secondary ? "#333" : "#fff")};
+  width: fit-content;
+  align-self: flex-end;
+  background: ${({ secondary }) => (secondary ? "#f1f5f9" : "#ea580c")};
+  color: ${({ secondary }) => (secondary ? "#475569" : "#fff")};
   border: none;
+  padding: 0.65rem 1.4rem;
   border-radius: 8px;
-  padding: 0.75rem 1.2rem;
+  font-size: 0.95rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: 0.2s;
+
   &:hover {
-    background: ${({ secondary }) => (secondary ? "#e0e0e0" : "#ea580c")};
+    background: ${({ secondary }) => (secondary ? "#e2e8f0" : "#d94e08")};
   }
+
   &:disabled {
     opacity: 0.6;
     cursor: not-allowed;
@@ -66,7 +85,7 @@ export const Button = styled.button`
 `;
 
 export const ErrorMsg = styled.p`
-  color: #d9534f;
+  color: #dc2626;
   margin-bottom: 1rem;
 `;
 
@@ -77,16 +96,27 @@ export const TableContainer = styled.div`
 export const Table = styled.table`
   width: 100%;
   border-collapse: collapse;
-  th,
-  td {
-    padding: 0.75rem;
-    border-bottom: 1px solid #eee;
-  }
+  font-size: 0.93rem;
+
   th {
     text-align: left;
-    color: #666;
-    font-weight: 500;
+    padding: 0.75rem;
+    background: #f8fafc;
+    color: #475569;
+    font-weight: 600;
+    border-bottom: 1px solid #e2e8f0;
   }
+
+  td {
+    padding: 0.75rem;
+    color: #334155;
+    border-bottom: 1px solid #f1f5f9;
+  }
+
+  tr:hover td {
+    background: #f8fafc;
+  }
+
   td.actions {
     display: flex;
     gap: 0.5rem;
@@ -96,16 +126,24 @@ export const Table = styled.table`
 export const IconButton = styled.button`
   background: none;
   border: none;
-  color: ${({ delete: isDelete }) => (isDelete ? "#d9534f" : "#0077ff")};
+  padding: 4px;
   cursor: pointer;
-  transition: color 0.2s;
+  border-radius: 6px;
+  color: ${({ delete: isDelete }) => (isDelete ? "#dc2626" : "#0c63e7")};
+  transition: 0.2s;
+
   &:hover {
-    color: ${({ delete: isDelete }) => (isDelete ? "#b52b27" : "#005fcc")};
+    background: #f1f5f9;
+  }
+
+  svg {
+    width: 18px;
+    height: 18px;
   }
 `;
 
 export const fadeIn = keyframes`
-  from { opacity: 0; transform: scale(0.95) translateY(-10px); }
+  from { opacity: 0; transform: scale(0.96) translateY(-4px); }
   to { opacity: 1; transform: scale(1) translateY(0); }
 `;
 
@@ -124,15 +162,18 @@ export const ModalContent = styled.div`
   border-radius: 12px;
   padding: 2rem;
   width: 90%;
-  max-width: 480px;
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.15);
+  max-width: 460px;
   animation: ${fadeIn} 0.25s ease;
+
+  @media (max-width: 600px) {
+    padding: 1.4rem;
+  }
 `;
 
 export const ModalTitle = styled.h2`
   margin-bottom: 1rem;
   font-weight: 600;
-  color: #222;
+  color: #1e293b;
 `;
 
 export const ModalActions = styled.div`

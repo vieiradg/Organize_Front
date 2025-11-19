@@ -99,9 +99,7 @@ const WeeklyCalendar = ({ initialDate = new Date() }) => {
     try {
       setLoading(true);
       await agendaService.updateAppointmentStatus(id, newStatus);
-      setAppointments((prev) =>
-        prev.map((a) => (a.id === id ? { ...a, status: newStatus } : a))
-      );
+
       setSelectedAppointment(null);
     } catch (error) {
       console.error("Erro ao atualizar status:", error);
@@ -165,8 +163,10 @@ const WeeklyCalendar = ({ initialDate = new Date() }) => {
       {hours.map((hour) => (
         <React.Fragment key={hour}>
           <HourLabel>{`${hour}:00h`}</HourLabel>
+
           {weekDates.map((_, dayIndex) => {
             const slotAppointments = getAppointmentsForSlot(dayIndex, hour);
+
             return (
               <TimeSlot key={`${dayIndex}-${hour}`}>
                 {slotAppointments.map((appointment) => (
@@ -178,6 +178,7 @@ const WeeklyCalendar = ({ initialDate = new Date() }) => {
                     <AppointmentTitle>
                       {appointment.serviceName || "Serviço não informado"}
                     </AppointmentTitle>
+
                     <AppointmentInfo>
                       🕒{" "}
                       {new Date(appointment.startTime).toLocaleTimeString(
