@@ -152,7 +152,6 @@ const DailyCalendar = () => {
         </NavButton>
       </Header>
 
-      {/* 🔹 Loader */}
       {loading && (
         <div style={{ padding: "8px 12px", fontSize: 14, color: "#6b7280" }}>
           Carregando agendamentos...
