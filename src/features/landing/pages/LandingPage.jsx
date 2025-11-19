@@ -85,9 +85,9 @@ export default function LandingPage() {
               <div className="imagem-hero">
                 <div className="container-imagem">
                   <img
-                    src="https://placehold.co/600x400/99f6e4/1d4ed8?text=Dashboard+do+Organize"
-                    alt="Interface do Organize"
-                    className="imagem-dashboard"
+                      src="/dashboard.png"
+                      alt="Interface do Organize"
+                      className="imagem-dashboard"
                   />
                 </div>
               </div>
@@ -179,9 +179,9 @@ export default function LandingPage() {
               </div>
               <div className="imagem-funcionalidade">
                 <img
-                  src="https://placehold.co/600x500/99f6e4/1d4ed8?text=App+do+Organize"
-                  alt="Profissional a usar o Organize"
-                  className="imagem-funcionalidade-principal"
+                    src="/agenda.png"
+                    alt="Agenda do Organize"
+                    className="imagem-funcionalidade-principal"
                 />
               </div>
             </div>
