@@ -13,7 +13,7 @@ const getDashboardData = async () => {
         adminId,
       },
     });
-
+    console.log(response.data);
     return response.data;
   } catch (error) {
     console.error("Erro ao buscar dados do dashboard:", error);

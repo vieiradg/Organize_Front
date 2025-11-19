@@ -49,14 +49,22 @@ export default function ReportsSection() {
     }
   };
 
-  const handleDeleteReport = async (reportId) => {
+  async function handleDelete(reportId) {
+    const token = localStorage.getItem("token");
+
     try {
-      await api.delete(`/api/reports/${reportId}`);
+      await api.delete(`/api/reports/${reportId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
       setReports((prev) => prev.filter((r) => r.id !== reportId));
+
+      alert("Relatório excluído com sucesso!");
     } catch (err) {
-      console.error("Erro ao excluir relatório:", err);
+      alert("Erro ao excluir relatório!");
+      console.error("Erro ao deletar:", err);
     }
-  };
+  }
 
   const grouped = reports.reduce((acc, report) => {
     const [year, monthNumber] = report.reportMonth.split("-");
@@ -100,7 +108,7 @@ export default function ReportsSection() {
                     key={report.id}
                     report={report}
                     onView={handleViewReport}
-                    onDelete={handleDeleteReport}
+                    onDelete={handleDelete}
                     downloading={downloading}
                     setDownloading={setDownloading}
                   />
